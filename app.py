@@ -60,9 +60,17 @@ plantas = [
         "preco": "150,00",
         "imagem": "singonio_albo_variegata.jpg",
         "descricao": "Planta rara com folhas variegadas em branco e verde. Muito valorizada e perfeita para colecionadores."
+    },
+    {
+    "id": 9,
+    "nome": "Filodendro Seloun Gold",
+    "preco": "70,00",
+    "imagem": "filodendro_seloun_gold.JPG",
+    "descricao": "O Filodendro Selloum Gold traz destaque e sofisticação com suas folhas grandes e recortadas em tom dourado, criando um visual tropical moderno."
 }
-
 ]
+
+
 
 @app.route("/")
 def inicio():
