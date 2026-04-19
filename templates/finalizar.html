@@ -85,17 +85,19 @@
                     {% endfor %}
                 </select>
 
-                <div class="acoes-finalizar">
+                <button type="submit" class="botao">Calcular frete</button>
+            </form>
 
-    <button type="submit" class="botao">
-        Calcular frete
-    </button>
-
-    <button type="button" onclick="enviarWhatsApp()" class="botao-finalizar-whatsapp">
-        Finalizar pelo WhatsApp
-    </button>
-
-</div>
+            <!-- ✅ BOTÃO SÓ LIBERA QUANDO TIVER BAIRRO -->
+            {% if bairro_selecionado %}
+                <a href="{{ link_whatsapp }}" target="_blank" class="botao botao-finalizar-whatsapp">
+                    Finalizar pelo WhatsApp
+                </a>
+            {% else %}
+                <button class="botao botao-finalizar-whatsapp" disabled>
+                    Calcule o frete para finalizar
+                </button>
+            {% endif %}
 
         </div>
     </main>
