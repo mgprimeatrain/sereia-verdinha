@@ -1,39 +1,40 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sereia Verdinha</title>
 
-    <!-- Fonte -->
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap" rel="stylesheet">
-    <!-- CSS -->
+
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <a href="/carrinho" class="icone-carrinho">🛒</a>
 
-<header>
+<a href="/carrinho" class="icone-carrinho">🛒</a>
+
+<header class="topo">
     <h1>Sereia Verdinha 🌿</h1>
     <p>Loja de plantas ornamentais</p>
 </header>
 
-<main class="produtos">
-
-    
-   <main class="produtos">
-    {% for planta in plantas %}
-        <div class="card">
-            <img src="{{ url_for('static', filename='img/' + planta.imagem) }}" alt="{{ planta.nome }}">
-
+<main class="container">
+    <section class="produtos">
+        {% for planta in plantas %}
+        <div class="card-produto">
+            <img src="{{ url_for('static', filename='img/' + planta.image) }}" alt="{{ planta.nome }}">
             <h2>{{ planta.nome }}</h2>
             <p>{{ planta.descricao }}</p>
-
             <a href="/produto/{{ planta.id }}" class="botao">Ver produto</a>
         </div>
-    {% endfor %}
-</main>
+        {% endfor %}
+    </section>
 </main>
 
+<a href="https://wa.me/5521982372110?text=Olá,%20vim%20pelo%20site%20e%20quero%20mais%20informações!" class="botao-whatsapp" target="_blank">
+    <img src="https://cdn-icons-png.flaticon.com/512/220/220236.png" alt="WhatsApp">
+</a>
+
+</body>
+</html>

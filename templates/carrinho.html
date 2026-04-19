@@ -4,63 +4,79 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Carrinho | Sereia Verdinha</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
 
-<header>
-    <h1>Sereia Verdinha 🌿</h1>
-    <p>Seu carrinho</p>
-</header>
+    <a href="/" class="botao-voltar">← Voltar</a>
+    <a href="/carrinho" class="icone-carrinho">🛒</a>
 
-<a href="/carrinho" class="icone-carrinho">🛒</a>
+    <main class="carrinho-container">
+        <div class="carrinho-box">
+            <h1>Seu carrinho</h1>
 
-<main class="carrinho-container">
-    <h2></h2>
+            {% if itens %}
+                <div class="lista-carrinho">
+                    {% for item in itens %}
+                    <div class="item-carrinho">
+                        {% if item.imagem %}
+                        <img src="{{ url_for('static', filename='img/' + item.imagem) }}" alt="{{ item.produto }}">
+                        {% endif %}
 
-    {% if itens %}
-        <div class="lista-carrinho">
+                        <div class="info-item">
+                            <h3>{{ item.produto }}</h3>
+                            <p>R$ {{ item.preco }}</p>
+                        </div>
 
-            {% for item in itens %}
-                <div class="item-carrinho">
-                    <img src="{{ url_for('static', filename='img/' + item.get('imagem', 'aglaonema.jpg')) }}" alt="{{ item.produto }}">
+                        <a href="{{ url_for('remover_item', indice=loop.index0) }}" class="botao-remover">Remover</a>
+                    </div>
+                    {% endfor %}
+                </div>
 
-                    <div class="info-item">
-                        <h3>{{ item.produto }}</h3>
-                        <p>R$ {{ item.preco }}</p>
+                <div class="rodape-carrinho">
+                    <div class="acoes-esquerda">
+                        <a href="/" class="botao botao-secundario">Continuar comprando</a>
+                        <a href="/limpar_carrinho" class="botao botao-esvaziar">Esvaziar carrinho</a>
                     </div>
 
-                    <a href="/remover_item/{{ loop.index0 }}" class="botao-remover">Remover</a>
+                    <div class="resumo-direita">
+                        <p class="total-carrinho">Total: R$ {{ total }}</p>
+                        <a href="/finalizar" class="botao botao-finalizar">Finalizar compra</a>
+                    </div>
                 </div>
-            {% endfor %}
 
+            {% else %}
+                <div class="carrinho-vazio">
+                    <div class="icone-vazio">🪴</div>
+                    <h3>Seu carrinho está vazio</h3>
+                    <p>Adicione algumas plantas para continuar.</p>
+                    <a href="/" class="botao">Voltar para a loja</a>
+                </div>
+            {% endif %}
         </div>
+    </main>
 
-        <div class="rodape-carrinho">
-    <div class="acoes-esquerda">
-        <a href="/" class="botao">Continuar comprando</a>
-        <a href="/limpar_carrinho" class="botao">Esvaziar carrinho</a>
+    <div id="popup-adicionado" class="popup-adicionado">
+        Produto adicionado ao carrinho!
     </div>
 
-    <div class="resumo-direita">
-        <div class="total-carrinho">
-            Total: R$ {{ "%.2f"|format(total) }}
-        </div>
+    <script>
+        const params = new URLSearchParams(window.location.search);
 
-        <a href="/finalizar" class="botao botao-finalizar">Finalizar compra</a>
-    </div>
-</div>
-        </div>
+        if (params.get("adicionado") === "1") {
+            const popup = document.getElementById("popup-adicionado");
+            if (popup) {
+                popup.classList.add("mostrar");
 
-    {% else %}
-    <div class="carrinho-vazio">
-        <div class="icone-vazio">🛒</div>
-        <h3>Seu carrinho está vazio</h3>
-        <p>Adicione algumas plantas para continuar sua compra.</p>
-        <a href="/" class="botao">Voltar para a loja</a>
-    </div>
-{% endif %}
-</main>
+                setTimeout(() => {
+                    popup.classList.remove("mostrar");
+                }, 2500);
+            }
+        }
+    </script>
 
 </body>
 </html>

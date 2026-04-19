@@ -4,33 +4,61 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ planta.nome }}</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
+    <header class="topo">
+    <h1>Sereia Verdinha 🌿</h1>
+    <p>Loja de plantas ornamentais</p>
+</header>
+
+<a href="/" class="botao-voltar">← Voltar</a>
+<a href="/carrinho" class="icone-carrinho">🛒</a>
+    
 
     <a href="/" class="botao-voltar">← Voltar</a>
     <a href="/carrinho" class="icone-carrinho">🛒</a>
 
-    <header>
-        <h1>Sereia Verdinha 🌿</h1>
-        <p>Loja de plantas ornamentais</p>
-    </header>
-
     <main class="pagina-produto">
         <div class="produto-imagem">
-            <img src="{{ url_for('static', filename='img/' + planta.imagem) }}" alt="{{ planta.nome }}">
+            <img src="{{ url_for('static', filename='img/' + planta.image) }}" alt="{{ planta.nome }}">
         </div>
 
         <div class="produto-info">
-            <h2>{{ planta.nome }}</h2>
+            <h1>{{ planta.nome }}</h1>
             <p class="descricao">{{ planta.descricao }}</p>
             <p class="preco">R$ {{ planta.preco }}</p>
 
-            <a href="/adicionar_carrinho?produto={{ planta.nome }}&preco={{ planta.preco }}&imagem={{ planta.imagem }}&voltar=/produto/{{ planta.id }}" class="botao">
-                Adicionar ao carrinho
-            </a>
-        </div>
-    </main>
+          <a
+    href="{{ url_for('adicionar_carrinho', produto=planta.nome, preco=planta.preco, imagem=planta.image, voltar=request.path) }}"
+    class="botao botao-comprar"
+>
+    Adicionar ao carrinho
+</a>
+
+<div id="popup-adicionado" class="popup-adicionado">
+    Produto adicionado ao carrinho!
+</div>
+
+<script>
+const params = new URLSearchParams(window.location.search);
+
+if (params.get("adicionado") === "1") {
+    const popup = document.getElementById("popup-adicionado");
+
+    if (popup) {
+        popup.classList.add("mostrar");
+
+        setTimeout(() => {
+            popup.classList.remove("mostrar");
+        }, 2500);
+    }
+}
+</script>
+
 
 </body>
 </html>

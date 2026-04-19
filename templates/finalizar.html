@@ -2,20 +2,103 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Compra finalizada</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finalizar compra | Sereia Verdinha</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
 
-<a href="/" class="botao-voltar">← Voltar</a>
+    <header class="topo">
+        <h1>Sereia Verdinha 🌿</h1>
+        <p>Loja de plantas ornamentais</p>
+    </header>
 
-<main class="carrinho-container">
-    <div class="carrinho-vazio">
-        <h2>Compra finalizada 🎉</h2>
-        <p>Obrigado por comprar na Sereia Verdinha!</p>
-        <a href="/" class="botao">Voltar para a loja</a>
-    </div>
-</main>
+    <a href="/carrinho" class="botao-voltar">← Voltar</a>
+    <a href="/carrinho" class="icone-carrinho">🛒</a>
+
+    <main class="finalizar-container">
+        <div class="finalizar-box">
+            <h1>Finalizar compra</h1>
+
+            <div class="resumo-pedido">
+                <h2>Resumo do pedido</h2>
+
+                {% for item in itens %}
+                <div class="linha-pedido">
+                    <span>{{ item.produto }}</span>
+                    <span>R$ {{ item.preco }}</span>
+                </div>
+                {% endfor %}
+
+                <div class="linha-pedido totalizador">
+                    <span>Subtotal</span>
+                    <span>R$ {{ subtotal }}</span>
+                </div>
+
+                <!-- ✅ FRETE CORRIGIDO -->
+                <div class="linha-pedido totalizador">
+                    <span>Frete</span>
+                    <span>
+                        {% if frete is not none %}
+                            R$ {{ "%.2f"|format(frete)|replace(".", ",") }}
+                        {% else %}
+                            A calcular
+                        {% endif %}
+                    </span>
+                </div>
+
+                <!-- ✅ TOTAL CORRIGIDO -->
+                <div class="linha-pedido total-geral">
+                    <span>Total</span>
+                    <span>
+                        {% if frete is not none %}
+                            R$ {{ total }}
+                        {% else %}
+                            R$ {{ subtotal }}
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+
+            <form method="GET" action="/finalizar" class="form-finalizar">
+                <h2>Endereço de entrega</h2>
+
+                <label>Rua</label>
+                <input type="text" name="rua" value="{{ rua }}" required>
+
+                <label>Número</label>
+                <input type="text" name="numero" value="{{ numero }}" required>
+
+                <label>Complemento</label>
+                <input type="text" name="complemento" value="{{ complemento }}">
+
+                <label>Bairro</label>
+                <select name="bairro" required>
+                    <option value="">Selecione o bairro</option>
+                    {% for nome_bairro, valor in bairros.items() %}
+                        <option value="{{ nome_bairro }}" {% if bairro_selecionado == nome_bairro %}selected{% endif %}>
+                            {{ nome_bairro }}
+                        </option>
+                    {% endfor %}
+                </select>
+
+                <div class="acoes-finalizar">
+
+    <button type="submit" class="botao">
+        Calcular frete
+    </button>
+
+    <button type="button" onclick="enviarWhatsApp()" class="botao-finalizar-whatsapp">
+        Finalizar pelo WhatsApp
+    </button>
+
+</div>
+
+        </div>
+    </main>
 
 </body>
 </html>
