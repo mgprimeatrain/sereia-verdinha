@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sansevieria | Sereia Verdinha</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <a href="/" class="botao-voltar">← Voltar</a>
+<a href="/carrinho" class="icone-carrinho">🛒</a>
+
+<header>
+    <h1>Sereia Verdinha 🌿</h1>
+    <p>Loja de plantas ornamentais</p>
+</header>
+
+<main class="pagina-produto">
+    
+    <div class="produto-imagem">
+        <img src="{{ url_for('static', filename='img/sansevieria.jpg') }}" alt="Sansevieria">
+    </div>
+
+    <div class="produto-info">
+        <h2>Sansevieria</h2>
+
+        <p class="descricao">
+            A Sansevieria é uma das plantas mais resistentes que existem.
+            Ideal para quem quer praticidade, ela precisa de pouca água
+            e se adapta facilmente a diferentes ambientes.
+        </p>
+
+       <a href="/adicionar_carrinho?produto=Sansevieria&preco=59,00&imagem=sansevieria.jpg&voltar=/sansevieria" class="botao">
+    Adicionar ao carrinho
+</a>
+    </div>
+
+</main>
+
+</body>
+</html>

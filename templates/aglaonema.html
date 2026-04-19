@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aglaonema | Sereia Verdinha</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <a href="/" class="botao-voltar">← Voltar</a>
+<a href="/carrinho" class="icone-carrinho">🛒</a>
+
+    <header>
+        <h1>Sereia Verdinha 🌿</h1>
+        <p>Loja de plantas ornamentais</p>
+    </header>
+
+    <main class="pagina-produto">
+        <div class="produto-imagem">
+            <img src="{{ url_for('static', filename='img/aglaonema.jpg') }}" alt="Aglaonema">
+        </div>
+
+        <div class="produto-info">
+            <h2>Aglaonema</h2>
+            <p class="descricao">
+                A Aglaonema é uma planta ornamental muito apreciada por sua beleza e facilidade de cuidado.
+                Ela se adapta bem a ambientes internos, trazendo um toque elegante e natural para a decoração.
+            </p>
+
+            <p class="preco">R$ 65,00</p>
+
+<a href="/adicionar_carrinho?produto=Aglaonema&preco=65,00&imagem=aglaonema.jpg&voltar=/aglaonema" class="botao">
+    Adicionar ao carrinho
+</a>
+</a>
+        </div>
+    </main>
+
+<body>
+</html>

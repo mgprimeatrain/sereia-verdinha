@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ planta.nome }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <a href="/" class="botao-voltar">← Voltar</a>
+    <a href="/carrinho" class="icone-carrinho">🛒</a>
+
+    <header>
+        <h1>Sereia Verdinha 🌿</h1>
+        <p>Loja de plantas ornamentais</p>
+    </header>
+
+    <main class="pagina-produto">
+        <div class="produto-imagem">
+            <img src="{{ url_for('static', filename='img/' + planta.imagem) }}" alt="{{ planta.nome }}">
+        </div>
+
+        <div class="produto-info">
+            <h2>{{ planta.nome }}</h2>
+            <p class="descricao">{{ planta.descricao }}</p>
+            <p class="preco">R$ {{ planta.preco }}</p>
+
+            <a href="/adicionar_carrinho?produto={{ planta.nome }}&preco={{ planta.preco }}&imagem={{ planta.imagem }}&voltar=/produto/{{ planta.id }}" class="botao">
+                Adicionar ao carrinho
+            </a>
+        </div>
+    </main>
+
+</body>
+</html>

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compra | Sereia Verdinha</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<header>
+    <h1>Sereia Verdinha 🌿</h1>
+    <p>Resumo do pedido</p>
+</header>
+
+<main class="pagina-produto">
+    <div class="produto-info">
+        <h2>Pedido confirmado</h2>
+        <p class="descricao">Você selecionou o produto:</p>
+        <p class="descricao"><strong>{{ produto }}</strong></p>
+        <p class="preco">Preço: {{ preco }}</p>
+
+        <a href="/" class="botao">Voltar para a loja</a>
+    </div>
+</main>
+
+</body>
+</html>

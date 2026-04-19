@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carrinho | Sereia Verdinha</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<header>
+    <h1>Sereia Verdinha 🌿</h1>
+    <p>Seu carrinho</p>
+</header>
+
+<a href="/carrinho" class="icone-carrinho">🛒</a>
+
+<main class="carrinho-container">
+    <h2></h2>
+
+    {% if itens %}
+        <div class="lista-carrinho">
+
+            {% for item in itens %}
+                <div class="item-carrinho">
+                    <img src="{{ url_for('static', filename='img/' + item.get('imagem', 'aglaonema.jpg')) }}" alt="{{ item.produto }}">
+
+                    <div class="info-item">
+                        <h3>{{ item.produto }}</h3>
+                        <p>R$ {{ item.preco }}</p>
+                    </div>
+
+                    <a href="/remover_item/{{ loop.index0 }}" class="botao-remover">Remover</a>
+                </div>
+            {% endfor %}
+
+        </div>
+
+        <div class="rodape-carrinho">
+    <div class="acoes-esquerda">
+        <a href="/" class="botao">Continuar comprando</a>
+        <a href="/limpar_carrinho" class="botao">Esvaziar carrinho</a>
+    </div>
+
+    <div class="resumo-direita">
+        <div class="total-carrinho">
+            Total: R$ {{ "%.2f"|format(total) }}
+        </div>
+
+        <a href="/finalizar" class="botao botao-finalizar">Finalizar compra</a>
+    </div>
+</div>
+        </div>
+
+    {% else %}
+    <div class="carrinho-vazio">
+        <div class="icone-vazio">🛒</div>
+        <h3>Seu carrinho está vazio</h3>
+        <p>Adicione algumas plantas para continuar sua compra.</p>
+        <a href="/" class="botao">Voltar para a loja</a>
+    </div>
+{% endif %}
+</main>
+
+</body>
+</html>
