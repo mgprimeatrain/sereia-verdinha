@@ -26,7 +26,13 @@
             <img src="{{ url_for('static', filename='img/' + planta.image) }}" alt="{{ planta.nome }}">
             <h2>{{ planta.nome }}</h2>
             <p>{{ planta.descricao }}</p>
-            <a href="/produto/{{ planta.id }}" class="botao">Ver produto</a>
+
+            {% if planta.estoque > 0 %}
+                <a href="/produto/{{ planta.id }}" class="botao">Ver produto</a>
+            {% else %}
+                <button class="botao-sem-estoque" disabled>Sem estoque</button>
+            {% endif %}
+
         </div>
         {% endfor %}
     </section>

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controle de Estoque</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='admin.css') }}">
+</head>
+<body>
+    <div class="painel-container">
+        <div class="painel-topo">
+            <h1>Painel de estoque</h1>
+            <a href="{{ url_for('admin_logout') }}" class="btn-sair">Sair</a>
+        </div>
+
+        <div class="lista-produtos">
+            {% for planta in plantas %}
+                <div class="produto-card">
+                    <div class="produto-info">
+                        <h2>{{ planta.nome }}</h2>
+                        <p>{{ planta.descricao }}</p>
+                        <span class="estoque-atual">
+                            Estoque atual: <strong>{{ planta.estoque }}</strong>
+                        </span>
+                    </div>
+
+                    <form method="POST" class="form-estoque">
+                        <input type="hidden" name="id" value="{{ planta.id }}">
+                        <input type="number" name="estoque" value="{{ planta.estoque }}" min="0" required>
+                        <button type="submit">Atualizar</button>
+                    </form>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <h1>FUNCIONANDO</h1>
+
+</body>
+</html>

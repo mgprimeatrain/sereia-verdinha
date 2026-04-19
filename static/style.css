@@ -638,3 +638,23 @@ body {
     align-items: center;
     justify-content: center;
 }
+.btn-comprar {
+    background-color: #2f5d3a;
+    color: white;
+    border: none;
+    padding: 12px 18px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 15px;
+    width: 100%;
+}
+.btn-sem-estoque {
+    background-color: #d9534f;
+    color: rgb(255, 0, 0);
+    border: none;
+    padding: 12px 18px;
+    border-radius: 10px;
+    cursor: not-allowed;
+    font-size: 15px;
+    width: 100%;
+}
