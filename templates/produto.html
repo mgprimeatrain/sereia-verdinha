@@ -11,13 +11,9 @@
 </head>
 <body>
     <header class="topo">
-    <h1>Sereia Verdinha 🌿</h1>
-    <p>Loja de plantas ornamentais</p>
-</header>
-
-<a href="/" class="botao-voltar">← Voltar</a>
-<a href="/carrinho" class="icone-carrinho">🛒</a>
-    
+        <h1>Sereia Verdinha 🌿</h1>
+        <p>Loja de plantas ornamentais</p>
+    </header>
 
     <a href="/" class="botao-voltar">← Voltar</a>
     <a href="/carrinho" class="icone-carrinho">🛒</a>
@@ -25,6 +21,14 @@
     <main class="pagina-produto">
         <div class="produto-imagem">
             <img src="{{ url_for('static', filename='img/' + planta.image) }}" alt="{{ planta.nome }}">
+
+            {% if planta.estoque == 0 %}
+    <span class="status-produto esgotado">Produto esgotado</span>
+{% elif planta.estoque <= 3 %}
+    <span class="status-produto ultimas">Últimas unidades disponíveis</span>
+{% else %}
+    <span class="status-produto disponivel">Disponível em estoque</span>
+{% endif %}
         </div>
 
         <div class="produto-info">
@@ -32,33 +36,64 @@
             <p class="descricao">{{ planta.descricao }}</p>
             <p class="preco">R$ {{ planta.preco }}</p>
 
-          <a
-    href="{{ url_for('adicionar_carrinho', produto=planta.nome, preco=planta.preco, imagem=planta.image, voltar=request.path) }}"
-    class="botao botao-comprar"
->
-    Adicionar ao carrinho
-</a>
+            {% if planta.estoque <= 3 and planta.estoque > 0 %}
+                <span class="tag-ultimas">Últimas unidades</span>
+            {% endif %}
 
-<div id="popup-adicionado" class="popup-adicionado">
-    Produto adicionado ao carrinho!
-</div>
+            <div class="info-cuidados">
+                <div class="info-item">
+                    <strong>Luz:</strong>
+                    <span>{{ planta.luz }}</span>
+                </div>
 
-<script>
-const params = new URLSearchParams(window.location.search);
+                <div class="info-item">
+                    <strong>Rega:</strong>
+                    <span>{{ planta.rega }}</span>
+                </div>
 
-if (params.get("adicionado") === "1") {
-    const popup = document.getElementById("popup-adicionado");
+                <div class="info-item">
+                    <strong>Ambiente:</strong>
+                    <span>{{ planta.ambiente }}</span>
+                </div>
 
-    if (popup) {
-        popup.classList.add("mostrar");
+                <div class="info-item">
+                    <strong>Dificuldade:</strong>
+                    <span>{{ planta.dificuldade }}</span>
+                </div>
+            </div>
 
-        setTimeout(() => {
-            popup.classList.remove("mostrar");
-        }, 2500);
-    }
-}
-</script>
+{% if planta.estoque == 0 %}
+    <button class="btn-sem-estoque" disabled>Sem estoque</button>
+{% else %}
+    <a
+        href="{{ url_for('adicionar_carrinho', id=planta.id, voltar=request.path) }}"
+        class="botao botao-comprar"
+    >
+        Adicionar ao carrinho
+    </a>
+{% endif %}
 
+        </div>
+    </main>
 
+    <div id="popup-adicionado" class="popup-adicionado">
+        Produto adicionado ao carrinho!
+    </div>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+
+        if (params.get("adicionado") === "1") {
+            const popup = document.getElementById("popup-adicionado");
+
+            if (popup) {
+                popup.classList.add("mostrar");
+
+                setTimeout(() => {
+                    popup.classList.remove("mostrar");
+                }, 2500);
+            }
+        }
+    </script>
 </body>
 </html>

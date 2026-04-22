@@ -90,8 +90,11 @@
 
             <!-- ✅ BOTÃO SÓ LIBERA QUANDO TIVER BAIRRO -->
             {% if bairro_selecionado %}
-                <a href="{{ link_whatsapp }}" target="_blank" class="botao botao-finalizar-whatsapp">
-                    Finalizar pelo WhatsApp
+                <a href="{{ url_for('confirmar_pedido', rua=rua, numero=numero, complemento=complemento, bairro=bairro_selecionado) }}"
+   style="display:block;width:100%;max-width:420px;margin:24px auto 0;padding:16px 20px;background:#19a884;color:#fff;text-align:center;text-decoration:none;font-size:17px;font-weight:700;border-radius:14px;">
+   Confirmar pedido
+</a>
+                </a>
                 </a>
             {% else %}
                 <button class="botao botao-finalizar-whatsapp" disabled>

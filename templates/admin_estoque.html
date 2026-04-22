@@ -8,33 +8,46 @@
 </head>
 <body>
     <div class="painel-container">
-        <div class="painel-topo">
-            <h1>Painel de estoque</h1>
-            <a href="{{ url_for('admin_logout') }}" class="btn-sair">Sair</a>
-        </div>
+    <div class="painel-topo">
+        <h1>Painel de estoque</h1>
+        <a href="{{ url_for('admin_adicionar') }}" class="btn-adicionar-produto">Adicionar nova planta</a>
+        <a href="{{ url_for('admin_logout') }}" class="btn-sair">Sair</a>
+    </div>
+
+    <!-- 👇 FORM ÚNICO -->
+    <form method="POST">
 
         <div class="lista-produtos">
             {% for planta in plantas %}
-                <div class="produto-card">
-                    <div class="produto-info">
-                        <h2>{{ planta.nome }}</h2>
-                        <p>{{ planta.descricao }}</p>
-                        <span class="estoque-atual">
-                            Estoque atual: <strong>{{ planta.estoque }}</strong>
-                        </span>
-                    </div>
-
-                    <form method="POST" class="form-estoque">
-                        <input type="hidden" name="id" value="{{ planta.id }}">
-                        <input type="number" name="estoque" value="{{ planta.estoque }}" min="0" required>
-                        <button type="submit">Atualizar</button>
-                    </form>
+            <div class="produto-card">
+                <div class="produto-info">
+                    <h2>{{ planta.nome }}</h2>
+                    <p>{{ planta.descricao }}</p>
+                    <span class="estoque-atual">
+                        Estoque atual: <strong>{{ planta.estoque }}</strong>
+                    </span>
                 </div>
+
+                <div class="form-estoque">
+                    <input type="number"
+                           name="estoque_{{ planta.id }}"
+                           value="{{ planta.estoque }}"
+                           min="0"
+                           required>
+                </div>
+            </div>
             {% endfor %}
         </div>
-    </div>
-    
-    <h1>FUNCIONANDO</h1>
+
+        <!-- 👇 BOTÃO GLOBAL -->
+        <button type="submit" class="btn-salvar-todos">
+            Salvar todos
+        </button>
+
+    </form>
+</div>
+
+  
 
 </body>
 </html>

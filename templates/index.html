@@ -19,28 +19,62 @@
     <p>Loja de plantas ornamentais</p>
 </header>
 
+<a href="https://wa.me/5521982372110?text=Olá,%20vim%20pelo%20site%20e%20quero%20mais%20informações!" class="botao-whatsapp" target="_blank">
+    <img src="https://cdn-icons-png.flaticon.com/512/220/220236.png" alt="WhatsApp">
+</a>
+
 <main class="container">
-    <section class="produtos">
+    <div class="barra-busca">
+        <input type="text" id="busca" placeholder="Buscar planta...">
+    </div>
+
+    <section class="produtos" id="lista-produtos">
         {% for planta in plantas %}
         <div class="card-produto">
-            <img src="{{ url_for('static', filename='img/' + planta.image) }}" alt="{{ planta.nome }}">
+            <div class="imagem-produto">
+                <img src="{{ url_for('static', filename='img/' + planta.image) }}" alt="{{ planta.nome }}">
+
+                {% if planta.estoque == 0 %}
+                    <span class="selo-esgotado">Esgotado</span>
+                {% endif %}
+            </div>
+
             <h2>{{ planta.nome }}</h2>
             <p>{{ planta.descricao }}</p>
 
-            {% if planta.estoque > 0 %}
-                <a href="/produto/{{ planta.id }}" class="botao">Ver produto</a>
-            {% else %}
-                <button class="botao-sem-estoque" disabled>Sem estoque</button>
+            {% if planta.estoque <= 3 and planta.estoque > 0 %}
+                <span class="tag-ultimas">Últimas unidades</span>
             {% endif %}
 
+            {% if planta.estoque == 0 %}
+                <button class="btn-sem-estoque" disabled>Sem estoque</button>
+            {% else %}
+                <a href="/produto/{{ planta.id }}" class="botao">Ver produto</a>
+            {% endif %}
         </div>
         {% endfor %}
     </section>
 </main>
 
-<a href="https://wa.me/5521982372110?text=Olá,%20vim%20pelo%20site%20e%20quero%20mais%20informações!" class="botao-whatsapp" target="_blank">
-    <img src="https://cdn-icons-png.flaticon.com/512/220/220236.png" alt="WhatsApp">
-</a>
+<script>
+    const campoBusca = document.getElementById("busca");
+    const cards = document.querySelectorAll(".card-produto");
+
+    campoBusca.addEventListener("input", function () {
+        const termo = this.value.toLowerCase();
+
+        cards.forEach(card => {
+            const nome = card.querySelector("h2").textContent.toLowerCase();
+            const descricao = card.querySelector("p").textContent.toLowerCase();
+
+            if (nome.includes(termo) || descricao.includes(termo)) {
+                card.style.display = "";
+            } else {
+                card.style.display = "none";
+            }
+        });
+    });
+</script>
 
 </body>
 </html>
