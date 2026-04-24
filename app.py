@@ -1,20 +1,21 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 import urllib.parse
-import json
 import os
+import psycopg2
 from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 app.secret_key = "sereia_verdinha_chave"
 
+DATABASE_URL = os.environ.get(
+    "DATABASE_URL",
+    "postgresql://postgres:SereiaRe8004@db.mlupsmpiynbgrtxeqzvv.supabase.co:5432/postgres"
+)
+
 SENHA_ADMIN = os.environ.get("SENHA_ADMIN", "Renata80$")
-ARQUIVO_PLANTAS = "plantas.json"
 
 PASTA_IMAGENS = os.path.join("static", "img")
 EXTENSOES_PERMITIDAS = {"png", "jpg", "jpeg", "webp"}
-
-def arquivo_permitido(nome_arquivo):
-    return "." in nome_arquivo and nome_arquivo.rsplit(".", 1)[1].lower() in EXTENSOES_PERMITIDAS
 
 FRETES = {
     "Vila Isabel": 10,
@@ -32,14 +33,84 @@ FRETES = {
 }
 
 
+def conectar_db():
+    return psycopg2.connect(DATABASE_URL)
+
+
+def arquivo_permitido(nome_arquivo):
+    return "." in nome_arquivo and nome_arquivo.rsplit(".", 1)[1].lower() in EXTENSOES_PERMITIDAS
+
+
 def carregar_plantas():
-    with open(ARQUIVO_PLANTAS, "r", encoding="utf-8") as arquivo:
-        return json.load(arquivo)
+    conn = conectar_db()
+    cur = conn.cursor()
+
+    cur.execute("""
+        SELECT id, nome, preco, image, descricao, estoque, luz, rega, ambiente, dificuldade
+        FROM plantas
+        ORDER BY id
+    """)
+
+    dados = cur.fetchall()
+
+    cur.close()
+    conn.close()
+
+    plantas = []
+
+    for p in dados:
+        plantas.append({
+            "id": p[0],
+            "nome": p[1],
+            "preco": p[2],
+            "image": p[3],
+            "descricao": p[4],
+            "estoque": p[5],
+            "luz": p[6],
+            "rega": p[7],
+            "ambiente": p[8],
+            "dificuldade": p[9]
+        })
+
+    return plantas
 
 
-def salvar_plantas(plantas):
-    with open(ARQUIVO_PLANTAS, "w", encoding="utf-8") as arquivo:
-        json.dump(plantas, arquivo, ensure_ascii=False, indent=4)
+def atualizar_estoque_banco(id_planta, novo_estoque):
+    conn = conectar_db()
+    cur = conn.cursor()
+
+    cur.execute(
+        "UPDATE plantas SET estoque = %s WHERE id = %s",
+        (novo_estoque, id_planta)
+    )
+
+    conn.commit()
+    cur.close()
+    conn.close()
+
+
+def adicionar_planta_banco(planta):
+    conn = conectar_db()
+    cur = conn.cursor()
+
+    cur.execute("""
+        INSERT INTO plantas (nome, preco, image, descricao, estoque, luz, rega, ambiente, dificuldade)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+    """, (
+        planta["nome"],
+        planta["preco"],
+        planta["image"],
+        planta["descricao"],
+        planta["estoque"],
+        planta["luz"],
+        planta["rega"],
+        planta["ambiente"],
+        planta["dificuldade"]
+    ))
+
+    conn.commit()
+    cur.close()
+    conn.close()
 
 
 def estoque_suficiente(itens_carrinho):
@@ -56,6 +127,7 @@ def estoque_suficiente(itens_carrinho):
 
     return True
 
+
 def baixar_estoque(itens_carrinho):
     plantas = carregar_plantas()
 
@@ -64,74 +136,8 @@ def baixar_estoque(itens_carrinho):
 
         if planta:
             novo_estoque = planta["estoque"] - item_carrinho["quantidade"]
-            planta["estoque"] = max(0, novo_estoque)
-
-    salvar_plantas(plantas)
-
-
-
-
-
-@app.route("/confirmar_pedido")
-def confirmar_pedido():
-    itens = session.get("carrinho", [])
-
-    if not itens:
-        return redirect(url_for("carrinho"))
-
-    if not estoque_suficiente(itens):
-        return "Algum item do carrinho não tem estoque suficiente. Volte e atualize o carrinho."
-
-    rua = request.args.get("rua", "")
-    numero = request.args.get("numero", "")
-    complemento = request.args.get("complemento", "")
-    bairro = request.args.get("bairro", "")
-
-    subtotal = 0
-    for item in itens:
-        subtotal += preco_para_float(item["preco"]) * item["quantidade"]
-
-    frete = FRETES.get(bairro) if bairro else None
-    total = subtotal + frete if frete is not None else subtotal
-
-    mensagem = "*Sereia Verdinha*\n\n"
-    mensagem += "*Pedido:*\n"
-
-    for item in itens:
-        mensagem += f"• {item['nome']} x{item['quantidade']} - R$ {item['preco']}\n"
-
-    mensagem += f"\n*Subtotal:* R$ {subtotal:.2f}".replace(".", ",")
-
-    if frete is not None:
-        mensagem += f"\n*Frete:* R$ {frete:.2f}".replace(".", ",")
-        mensagem += f"\n*Total:* R$ {total:.2f}".replace(".", ",")
-
-    if rua or numero or complemento or bairro:
-        mensagem += "\n\n*Endereço:*\n"
-        mensagem += f"Rua: {rua}\n"
-        mensagem += f"Número: {numero}\n"
-
-        if complemento:
-            mensagem += f"Complemento: {complemento}\n"
-
-        mensagem += f"Bairro: {bairro}"
-
-    baixar_estoque(itens)
-
-    session["carrinho"] = []
-    session.modified = True
-
-    link_whatsapp = f"https://wa.me/5521982372110?text={urllib.parse.quote(mensagem)}"
-    return redirect(link_whatsapp)
-
-    baixar_estoque(itens)
-
-    session["carrinho"] = []
-    session.modified = True
-
-    link_whatsapp = f"https://wa.me/5521982372110?text={urllib.parse.quote(mensagem)}"
-    return redirect(link_whatsapp)
-
+            novo_estoque = max(0, novo_estoque)
+            atualizar_estoque_banco(planta["id"], novo_estoque)
 
 
 def admin_logado():
@@ -140,6 +146,18 @@ def admin_logado():
 
 def preco_para_float(preco_str):
     return float(preco_str.replace("R$", "").replace(",", ".").strip())
+
+
+def total_itens_carrinho():
+    carrinho = session.get("carrinho", [])
+    return sum(item.get("quantidade", 1) for item in carrinho)
+
+
+@app.context_processor
+def injetar_dados_globais():
+    return {
+        "qtd_carrinho": total_itens_carrinho()
+    }
 
 
 @app.route("/")
@@ -163,52 +181,6 @@ def admin_login():
 
     return render_template("admin_login.html", erro=erro)
 
-def proximo_id(plantas):
-    if not plantas:
-        return 1
-    return max(planta["id"] for planta in plantas) + 1
-
-
-@app.route("/admin/adicionar", methods=["GET", "POST"])
-def admin_adicionar():
-    if not admin_logado():
-        return redirect(url_for("admin_login"))
-
-    plantas = carregar_plantas()
-
-    if request.method == "POST":
-        arquivo = request.files.get("image")
-
-        nome_imagem = ""
-
-        if arquivo and arquivo.filename:
-            if not arquivo_permitido(arquivo.filename):
-                return "Formato de imagem não permitido. Use png, jpg, jpeg ou webp."
-
-            nome_seguro = secure_filename(arquivo.filename)
-            caminho_imagem = os.path.join(PASTA_IMAGENS, nome_seguro)
-            arquivo.save(caminho_imagem)
-            nome_imagem = nome_seguro
-
-        nova_planta = {
-            "id": proximo_id(plantas),
-            "nome": request.form.get("nome", "").strip(),
-            "preco": request.form.get("preco", "").strip(),
-            "image": nome_imagem,
-            "descricao": request.form.get("descricao", "").strip(),
-            "estoque": int(request.form.get("estoque", 0)),
-            "luz": request.form.get("luz", "").strip(),
-            "rega": request.form.get("rega", "").strip(),
-            "ambiente": request.form.get("ambiente", "").strip(),
-            "dificuldade": request.form.get("dificuldade", "").strip()
-        }
-
-        plantas.append(nova_planta)
-        salvar_plantas(plantas)
-
-        return redirect(url_for("admin_estoque"))
-
-    return render_template("admin_adicionar.html")
 
 @app.route("/admin/logout")
 def admin_logout():
@@ -226,23 +198,55 @@ def admin_estoque():
     if request.method == "POST":
         for planta in plantas:
             campo = f'estoque_{planta["id"]}'
+
             if campo in request.form:
                 try:
-                    planta["estoque"] = int(request.form[campo])
+                    novo_estoque = int(request.form[campo])
                 except ValueError:
-                    planta["estoque"] = 0
+                    novo_estoque = 0
 
-        salvar_plantas(plantas)
+                atualizar_estoque_banco(planta["id"], novo_estoque)
+
         return redirect(url_for("admin_estoque"))
 
     return render_template("admin_estoque.html", plantas=plantas)
 
 
-@app.route("/comprar")
-def comprar():
-    produto = request.args.get("produto")
-    preco = request.args.get("preco")
-    return render_template("comprar.html", produto=produto, preco=preco)
+@app.route("/admin/adicionar", methods=["GET", "POST"])
+def admin_adicionar():
+    if not admin_logado():
+        return redirect(url_for("admin_login"))
+
+    if request.method == "POST":
+        arquivo = request.files.get("image")
+        nome_imagem = ""
+
+        if arquivo and arquivo.filename:
+            if not arquivo_permitido(arquivo.filename):
+                return "Formato de imagem não permitido. Use png, jpg, jpeg ou webp."
+
+            nome_seguro = secure_filename(arquivo.filename)
+            caminho_imagem = os.path.join(PASTA_IMAGENS, nome_seguro)
+            arquivo.save(caminho_imagem)
+            nome_imagem = nome_seguro
+
+        nova_planta = {
+            "nome": request.form.get("nome", "").strip(),
+            "preco": request.form.get("preco", "").strip(),
+            "image": nome_imagem,
+            "descricao": request.form.get("descricao", "").strip(),
+            "estoque": int(request.form.get("estoque", 0)),
+            "luz": request.form.get("luz", "").strip(),
+            "rega": request.form.get("rega", "").strip(),
+            "ambiente": request.form.get("ambiente", "").strip(),
+            "dificuldade": request.form.get("dificuldade", "").strip()
+        }
+
+        adicionar_planta_banco(nova_planta)
+
+        return redirect(url_for("admin_estoque"))
+
+    return render_template("admin_adicionar.html")
 
 
 @app.route("/produto/<int:id>")
@@ -306,6 +310,7 @@ def carrinho():
 @app.route("/limpar_carrinho")
 def limpar_carrinho():
     session["carrinho"] = []
+    session.modified = True
     return redirect(url_for("carrinho"))
 
 
@@ -337,37 +342,6 @@ def finalizar():
     frete = FRETES.get(bairro) if bairro else None
     total = subtotal + frete if frete is not None else subtotal
 
-    mensagem = "*Sereia Verdinha*%0A%0A"
-
-    if itens:
-        mensagem += "*Pedido:*%0A"
-
-        for item in itens:
-            mensagem += (
-                f"• {item['nome']} x{item['quantidade']} - "
-                f"R$ {item['preco']}%0A"
-            )
-
-        mensagem += f"%0A*Subtotal:* R$ {subtotal:.2f}".replace(".", ",")
-
-        if frete is not None:
-            mensagem += f"%0A*Frete:* R$ {frete:.2f}".replace(".", ",")
-            mensagem += f"%0A*Total:* R$ {total:.2f}".replace(".", ",")
-
-    if rua or numero or complemento or bairro:
-        mensagem += "%0A%0A*Endereço:*%0A"
-        mensagem += f"Rua: {rua}%0A"
-        mensagem += f"Número: {numero}%0A"
-
-        if complemento:
-            mensagem += f"Complemento: {complemento}%0A"
-
-        mensagem += f"Bairro: {bairro}"
-
-    link_whatsapp = (
-        f"https://wa.me/5521982372110?text={urllib.parse.quote(mensagem)}"
-    )
-
     return render_template(
         "finalizar.html",
         itens=itens,
@@ -378,9 +352,61 @@ def finalizar():
         bairro_selecionado=bairro,
         rua=rua,
         numero=numero,
-        complemento=complemento,
-        link_whatsapp=link_whatsapp
+        complemento=complemento
     )
+
+
+@app.route("/confirmar_pedido")
+def confirmar_pedido():
+    itens = session.get("carrinho", [])
+
+    if not itens:
+        return redirect(url_for("carrinho"))
+
+    if not estoque_suficiente(itens):
+        return "Algum item do carrinho não tem estoque suficiente. Volte e atualize o carrinho."
+
+    rua = request.args.get("rua", "")
+    numero = request.args.get("numero", "")
+    complemento = request.args.get("complemento", "")
+    bairro = request.args.get("bairro", "")
+
+    subtotal = 0
+    for item in itens:
+        subtotal += preco_para_float(item["preco"]) * item["quantidade"]
+
+    frete = FRETES.get(bairro) if bairro else None
+    total = subtotal + frete if frete is not None else subtotal
+
+    mensagem = "*Sereia Verdinha*\n\n"
+    mensagem += "*Pedido:*\n"
+
+    for item in itens:
+        mensagem += f"• {item['nome']} x{item['quantidade']} - R$ {item['preco']}\n"
+
+    mensagem += f"\n*Subtotal:* R$ {subtotal:.2f}".replace(".", ",")
+
+    if frete is not None:
+        mensagem += f"\n*Frete:* R$ {frete:.2f}".replace(".", ",")
+        mensagem += f"\n*Total:* R$ {total:.2f}".replace(".", ",")
+
+    if rua or numero or complemento or bairro:
+        mensagem += "\n\n*Endereço:*\n"
+        mensagem += f"Rua: {rua}\n"
+        mensagem += f"Número: {numero}\n"
+
+        if complemento:
+            mensagem += f"Complemento: {complemento}\n"
+
+        mensagem += f"Bairro: {bairro}"
+
+    baixar_estoque(itens)
+
+    session["carrinho"] = []
+    session.modified = True
+
+    link_whatsapp = f"https://wa.me/5521982372110?text={urllib.parse.quote(mensagem)}"
+    return redirect(link_whatsapp)
 
 
 if __name__ == "__main__":
