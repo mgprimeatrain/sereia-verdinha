@@ -29,14 +29,17 @@ func _ready() -> void:
 	_configurar_controles()
 	total = Dados.total_componentes()
 
-	# O mundo é desenhado em baixa resolução (480x270) e ampliado,
-	# por isso fica com cara de pixel art. A interface fica nítida por cima.
+	# O mundo é desenhado em baixa resolução (320x180) e ampliado,
+	# por isso fica com cara de pixel art e a câmera fica bem perto do coelho.
+	# A interface fica nítida por cima.
+	RenderingServer.set_default_clear_color(Color.BLACK)
 	var tela := SubViewportContainer.new()
-	tela.stretch = true
 	tela.process_mode = Node.PROCESS_MODE_PAUSABLE
+	tela.scale = Vector2(1.5, 1.5)
 	add_child(tela)
-	tela.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	var viewport := SubViewport.new()
+	viewport.size = Vector2i(320, 180)
+	tela.size = Vector2(320, 180)
 	viewport.snap_2d_transforms_to_pixel = true
 	viewport.canvas_item_default_texture_filter = Viewport.DEFAULT_CANVAS_ITEM_TEXTURE_FILTER_NEAREST
 	tela.add_child(viewport)

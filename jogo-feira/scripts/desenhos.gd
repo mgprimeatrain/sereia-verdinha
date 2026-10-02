@@ -65,72 +65,98 @@ static func desenhar(ci: CanvasItem, forma: String, cor: Color, t: float) -> voi
 
 # ---------------------------------------------------------------- personagem
 
-## O Coelho Cientista. O ponto (0, 0) fica nos pés.
+## Cores do coelho: troque aqui para ficar igual ao seu coelho!
+const PELO := Color("ece4da")
+const PELO_SOMBRA := Color("b8aa9c")
+const ROSA := Color("e8909c")
+const OLHO := Color("2a1410")
+const JALECO := Color("e8e4dc")
+const JALECO_SOMBRA := Color("a8a49c")
+const ORELHAS_CAIDAS := false
+
+
+## O Coelho Cientista, cabeçudo como nos jogos estilo Enigma do Medo.
+## O ponto (0, 0) fica nos pés.
 static func coelho(ci: CanvasItem, dir: Vector2, passo: float, andando: bool) -> void:
-	var pelo := Color("ece4da")
-	var rosa := Color("f2a7b5")
-	var jaleco := Color("f7f7fb")
 	var costas := dir.y < -0.5 and absf(dir.x) < 0.5
 	var lado := 0.0
 	if absf(dir.x) >= 0.5:
 		lado = signf(dir.x)
+	var o := Vector2(0, -absf(sin(passo)) * 1.2 if andando else 0.0)
 
-	var balanco := -absf(sin(passo)) * 1.5 if andando else 0.0
-	var o := Vector2(0, balanco)
+	elipse(ci, Vector2(0, 0), 9, 3, Color(0, 0, 0, 0.45))
 
-	elipse(ci, Vector2(0, 0), 8, 2.5, Color(0, 0, 0, 0.35))
-
-	# pés (alternando ao andar)
+	# pés
 	var p := sin(passo) * 1.5 if andando else 0.0
-	elipse(ci, Vector2(-3, -1 - maxf(p, 0)), 2.6, 1.7, CONTORNO)
-	elipse(ci, Vector2(3, -1 - maxf(-p, 0)), 2.6, 1.7, CONTORNO)
-	elipse(ci, Vector2(-3, -1.3 - maxf(p, 0)), 2, 1.2, pelo)
-	elipse(ci, Vector2(3, -1.3 - maxf(-p, 0)), 2, 1.2, pelo)
+	for s in [-1.0, 1.0]:
+		var pe := Vector2(s * 3.5, -1.2 - maxf(p * s, 0.0))
+		elipse(ci, pe, 3.2, 2.2, CONTORNO)
+		elipse(ci, pe + Vector2(0, -0.3), 2.4, 1.5, PELO)
 
-	# braços e corpo (jaleco)
-	caixa(ci, Rect2(Vector2(-7.5, -12) + o, Vector2(2, 6)), jaleco)
-	caixa(ci, Rect2(Vector2(5.5, -12) + o, Vector2(2, 6)), jaleco)
-	caixa(ci, Rect2(Vector2(-5.5, -14.5) + o, Vector2(11, 12)), jaleco)
-	elipse(ci, Vector2(-6.5, -5.5) + o, 1.5, 1.5, pelo)
-	elipse(ci, Vector2(6.5, -5.5) + o, 1.5, 1.5, pelo)
+	# braços
+	for s in [-1.0, 1.0]:
+		var braco := Vector2(s * 7.2, -8.5) + o
+		elipse(ci, braco, 2.6, 4.6, CONTORNO)
+		elipse(ci, braco, 1.8, 3.8, JALECO if s < 0 else JALECO_SOMBRA)
+		elipse(ci, braco + Vector2(0, 3.8), 1.7, 1.5, PELO)
+
+	# corpo com jaleco
+	ci.draw_colored_polygon(PackedVector2Array([
+		Vector2(-7, -14.5) + o, Vector2(7, -14.5) + o, Vector2(8.8, -1) + o, Vector2(-8.8, -1) + o]), CONTORNO)
+	ci.draw_colored_polygon(PackedVector2Array([
+		Vector2(-6, -13.5) + o, Vector2(6, -13.5) + o, Vector2(7.6, -2) + o, Vector2(-7.6, -2) + o]), JALECO)
+	ci.draw_colored_polygon(PackedVector2Array([
+		Vector2(3, -13.5) + o, Vector2(6, -13.5) + o, Vector2(7.6, -2) + o, Vector2(4, -2) + o]), JALECO_SOMBRA)
 	if costas:
-		elipse(ci, Vector2(0, -4) + o, 2.6, 2.6, Color.WHITE)
+		elipse(ci, Vector2(0, -5) + o, 3, 3, CONTORNO)
+		elipse(ci, Vector2(0, -5) + o, 2.3, 2.3, Color.WHITE)
 	elif lado == 0.0:
-		ci.draw_rect(Rect2(Vector2(-1.5, -14.5) + o, Vector2(3, 5)), Color("5ab4ff"))
-		ci.draw_rect(Rect2(Vector2(-0.5, -8) + o, Vector2(1, 1)), Color("8a8fa0"))
-		ci.draw_rect(Rect2(Vector2(-0.5, -5.5) + o, Vector2(1, 1)), Color("8a8fa0"))
+		ci.draw_colored_polygon(PackedVector2Array([Vector2(-2.5, -13.5) + o, Vector2(2.5, -13.5) + o, Vector2(0, -8) + o]), Color("3a5a8a"))
+		ci.draw_line(Vector2(0, -8) + o, Vector2(0, -2) + o, JALECO_SOMBRA)
+		ci.draw_rect(Rect2(Vector2(-6, -7) + o, Vector2(3, 2)), JALECO_SOMBRA)
+		ci.draw_rect(Rect2(Vector2(-5.5, -8.5) + o, Vector2(1, 2)), Color("d1603b"))
 	else:
-		ci.draw_rect(Rect2(Vector2(lado * 3 - 0.5, -10) + o, Vector2(1, 1)), Color("8a8fa0"))
+		ci.draw_line(Vector2(lado * 2, -13) + o, Vector2(lado * 3, -2) + o, JALECO_SOMBRA)
 
-	# cabeça e orelhas
-	var hc := Vector2(lado * 0.5, -20) + o
+	# cabeça grande
+	var hc := Vector2(lado * 0.8, -21) + o
 	var mexe := sin(passo * 0.5) * 0.8 if andando else 0.0
 	for s in [-1.0, 1.0]:
-		var ec: Vector2 = hc + Vector2(s * 3 + mexe - lado, -8)
-		elipse(ci, ec, 2.8, 7, CONTORNO)
-		elipse(ci, ec, 2, 6.2, pelo)
-		if not costas:
-			elipse(ci, ec + Vector2(0, 1), 1, 4.2, rosa)
-	elipse(ci, hc, 7.3, 6.3, CONTORNO)
-	elipse(ci, hc, 6.5, 5.5, pelo)
+		if ORELHAS_CAIDAS:
+			var ec: Vector2 = hc + Vector2(s * 8.2, 2)
+			elipse(ci, ec, 3.4, 7.2, CONTORNO)
+			elipse(ci, ec, 2.6, 6.4, PELO_SOMBRA if s > 0 else PELO)
+		else:
+			var ec: Vector2 = hc + Vector2(s * 3.6 + mexe - lado * 1.5, -11)
+			elipse(ci, ec, 3.4, 8.6, CONTORNO)
+			elipse(ci, ec, 2.6, 7.8, PELO if s < 0 else PELO_SOMBRA)
+			if not costas:
+				elipse(ci, ec + Vector2(0, 1), 1.2, 5.6, ROSA)
+	elipse(ci, hc, 9.8, 8.3, CONTORNO)
+	elipse(ci, hc, 9, 7.5, PELO_SOMBRA)
+	elipse(ci, hc + Vector2(-0.6, -0.8), 8.2, 6.6, PELO)
 
 	# óculos de proteção na testa
-	ci.draw_rect(Rect2(hc + Vector2(-6.5, -4.5), Vector2(13, 1.5)), Color("3a3f55"))
+	ci.draw_rect(Rect2(hc + Vector2(-9, -5.8), Vector2(18, 1.8)), Color("3a2e28"))
 	if costas:
 		return
 	if lado == 0.0:
-		elipse(ci, hc + Vector2(-2.6, -3.8), 2, 1.6, Color("7fe0ff"))
-		elipse(ci, hc + Vector2(2.6, -3.8), 2, 1.6, Color("7fe0ff"))
-		ci.draw_rect(Rect2(hc + Vector2(-3, -0.5), Vector2(1.3, 2)), CONTORNO)
-		ci.draw_rect(Rect2(hc + Vector2(1.7, -0.5), Vector2(1.3, 2)), CONTORNO)
-		elipse(ci, hc + Vector2(0, 2), 1.1, 0.8, rosa)
-		elipse(ci, hc + Vector2(-4.2, 2), 1.2, 0.8, Color(rosa, 0.6))
-		elipse(ci, hc + Vector2(4.2, 2), 1.2, 0.8, Color(rosa, 0.6))
+		for s in [-1.0, 1.0]:
+			elipse(ci, hc + Vector2(s * 3.4, -5), 2.6, 2.1, Color("3a2e28"))
+			elipse(ci, hc + Vector2(s * 3.4, -5), 1.8, 1.4, Color("e8a040"))
+			# olhos grandes e brilhantes
+			ci.draw_rect(Rect2(hc + Vector2(s * 3.4 - 1.3, -0.8), Vector2(2.6, 3.6)), OLHO)
+			ci.draw_rect(Rect2(hc + Vector2(s * 3.4 - 1.3, -0.8), Vector2(1, 1)), Color.WHITE)
+			elipse(ci, hc + Vector2(s * 6.2, 3.6), 1.5, 0.9, Color(ROSA, 0.6))
+		ci.draw_colored_polygon(PackedVector2Array([hc + Vector2(-1, 3), hc + Vector2(1, 3), hc + Vector2(0, 4.2)]), ROSA)
+		ci.draw_line(hc + Vector2(0, 4.2), hc + Vector2(0, 5.2), OLHO)
 	else:
-		elipse(ci, hc + Vector2(lado * 3, -3.8), 2, 1.6, Color("7fe0ff"))
-		ci.draw_rect(Rect2(hc + Vector2(lado * 3 - 0.6, -0.5), Vector2(1.3, 2)), CONTORNO)
-		elipse(ci, hc + Vector2(lado * 6.3, 1.8), 1, 0.8, rosa)
-		elipse(ci, hc + Vector2(lado * 2, 2.2), 1.2, 0.8, Color(rosa, 0.6))
+		elipse(ci, hc + Vector2(lado * 4, -5), 2.6, 2.1, Color("3a2e28"))
+		elipse(ci, hc + Vector2(lado * 4, -5), 1.8, 1.4, Color("e8a040"))
+		ci.draw_rect(Rect2(hc + Vector2(lado * 4.2 - 1.3, -0.8), Vector2(2.6, 3.6)), OLHO)
+		ci.draw_rect(Rect2(hc + Vector2(lado * 4.2 - (1.3 if lado > 0 else -0.3), -0.8), Vector2(1, 1)), Color.WHITE)
+		elipse(ci, hc + Vector2(lado * 8.9, 2.6), 1.1, 0.9, ROSA)
+		elipse(ci, hc + Vector2(lado * 4.5, 3.8), 1.5, 0.9, Color(ROSA, 0.6))
 
 
 # ---------------------------------------------------------------- componentes
@@ -325,3 +351,227 @@ static func _aviso(ci: CanvasItem, cor: Color) -> void:
 	ci.draw_rect(Rect2(-9, -8, 18, 1.5), tinta)
 	ci.draw_rect(Rect2(-9, -5, 13, 1.5), tinta)
 	ci.draw_rect(Rect2(-9, -2, 16, 1.5), tinta)
+
+
+# ---------------------------------------------------------------- móveis
+
+const MADEIRA := Color("4a2e1a")
+const MADEIRA_ESCURA := Color("2e1c10")
+
+
+static func largura_movel(tipo: String) -> float:
+	match tipo:
+		"estante": return 36
+		"bancada": return 52
+		"armario": return 26
+		"caixas": return 28
+		"mesa_vela": return 20
+		"lampiao": return 10
+		"barril": return 18
+		"sucata": return 40
+	return 16
+
+
+## Luz de um móvel: (altura da luz, raio, força). Vector3.ZERO = sem luz.
+static func luz_movel(tipo: String) -> Vector3:
+	match tipo:
+		"mesa_vela": return Vector3(-20, 75, 0.95)
+		"lampiao": return Vector3(-18, 70, 0.9)
+		"bancada": return Vector3(-24, 32, 0.35)
+	return Vector3.ZERO
+
+
+static func _chama(ci: CanvasItem, base: Vector2, t: float, fase: float) -> void:
+	var tremida := sin(t * 13.0 + fase) * 0.4 + sin(t * 7.0 + fase * 2.0) * 0.3
+	elipse(ci, base + Vector2(tremida * 0.5, -2.5), 1.6, 3.0 + tremida * 0.4, Color("ff8a2a"))
+	elipse(ci, base + Vector2(tremida * 0.3, -2), 0.8, 1.6, Color("ffe8a0"))
+
+
+static func movel(ci: CanvasItem, tipo: String, t: float) -> void:
+	match tipo:
+		"estante": _estante(ci)
+		"bancada": _bancada(ci, t)
+		"armario": _armario(ci)
+		"caixas": _caixas(ci)
+		"mesa_vela": _mesa_vela(ci, t)
+		"lampiao": _lampiao(ci, t)
+		"cabos": _cabos(ci)
+		"barril": _barril(ci, t)
+		"sucata": _sucata(ci)
+		"quadro": _quadro(ci)
+		"janela": _janela(ci)
+		"tabela": _tabela(ci)
+
+
+static func _estante(ci: CanvasItem) -> void:
+	elipse(ci, Vector2(0, 0), 20, 3, Color(0, 0, 0, 0.4))
+	caixa(ci, Rect2(-18, -52, 36, 52), MADEIRA)
+	ci.draw_rect(Rect2(-16, -50, 32, 48), Color("1a0f08"))
+	var cores := [Color("6a2a20"), Color("2e4a2e"), Color("6a5a2a"), Color("2a3048"), Color("5a3a4a"), Color("7a6a4a")]
+	for prateleira in 3:
+		var y := -50 + prateleira * 16
+		ci.draw_rect(Rect2(-16, y + 14, 32, 2), MADEIRA.lightened(0.1))
+		var x := -15.0
+		var i := prateleira * 2
+		while x < 13:
+			var lar := 2.0 + (i * 7 % 3)
+			var alt := 9.0 + (i * 5 % 4)
+			if prateleira == 1 and i % 3 == 0:
+				# vidro com líquido
+				ci.draw_rect(Rect2(x, y + 14 - 8, 4, 8), Color(0.8, 0.9, 0.9, 0.3))
+				ci.draw_rect(Rect2(x, y + 14 - 4, 4, 4), Color("7fd13b") if i % 2 == 0 else Color("d1603b"))
+				lar = 4
+			else:
+				ci.draw_rect(Rect2(x, y + 14 - alt, lar, alt), cores[i % cores.size()])
+				ci.draw_rect(Rect2(x, y + 14 - alt + 2, lar, 1), Color(1, 1, 1, 0.12))
+			x += lar + 1
+			i += 1
+	ci.draw_rect(Rect2(-18, -52, 36, 2), MADEIRA.lightened(0.15))
+
+
+static func _bancada(ci: CanvasItem, t: float) -> void:
+	elipse(ci, Vector2(0, 0), 28, 3, Color(0, 0, 0, 0.4))
+	caixa(ci, Rect2(-24, -14, 3, 14), MADEIRA_ESCURA)
+	caixa(ci, Rect2(21, -14, 3, 14), MADEIRA_ESCURA)
+	caixa(ci, Rect2(-22, -14, 44, 6), MADEIRA)
+	ci.draw_rect(Rect2(-4, -12, 8, 1), Color("8a6a40"))
+	caixa(ci, Rect2(-26, -19, 52, 5), MADEIRA.lightened(0.12))
+	# erlenmeyer verde
+	ci.draw_colored_polygon(PackedVector2Array([Vector2(-17, -27), Vector2(-15, -27), Vector2(-12, -19), Vector2(-20, -19)]), Color(0.8, 0.9, 0.9, 0.35))
+	ci.draw_colored_polygon(PackedVector2Array([Vector2(-18.5, -22), Vector2(-13.5, -22), Vector2(-12, -19), Vector2(-20, -19)]), Color("7fd13b"))
+	var b := fmod(t * 6.0, 6.0)
+	elipse(ci, Vector2(-16, -22 - b), 0.7, 0.7, Color(0.8, 1, 0.6, 1.0 - b / 6.0))
+	# béquer laranja
+	ci.draw_rect(Rect2(-6, -26, 7, 7), Color(0.8, 0.9, 0.9, 0.35))
+	ci.draw_rect(Rect2(-6, -23, 7, 4), Color("e07a2a"))
+	# tubos de ensaio
+	caixa(ci, Rect2(5, -22, 14, 3), MADEIRA_ESCURA)
+	var cores := [Color("d13b5a"), Color("3bb0d1"), Color("d1c03b")]
+	for i in 3:
+		ci.draw_rect(Rect2(7 + i * 4, -29, 2, 8), Color(0.8, 0.9, 0.9, 0.35))
+		ci.draw_rect(Rect2(7 + i * 4, -25, 2, 4), cores[i])
+
+
+static func _armario(ci: CanvasItem) -> void:
+	elipse(ci, Vector2(0, 0), 15, 3, Color(0, 0, 0, 0.4))
+	caixa(ci, Rect2(-13, -46, 26, 46), MADEIRA)
+	ci.draw_rect(Rect2(-11, -44, 10, 30), MADEIRA_ESCURA)
+	ci.draw_rect(Rect2(1, -44, 10, 30), MADEIRA_ESCURA)
+	ci.draw_rect(Rect2(-10, -43, 8, 28), Color(0.6, 0.7, 0.7, 0.15))
+	ci.draw_rect(Rect2(2, -43, 8, 28), Color(0.6, 0.7, 0.7, 0.15))
+	ci.draw_rect(Rect2(-8, -26, 3, 6), Color("7a5a2a"))
+	ci.draw_rect(Rect2(4, -38, 4, 5), Color("3a5a3a"))
+	ci.draw_rect(Rect2(-11, -12, 22, 9), MADEIRA_ESCURA)
+	ci.draw_rect(Rect2(-2, -9, 4, 1), DOURADO)
+	ci.draw_rect(Rect2(-2, -30, 1, 3), DOURADO)
+	ci.draw_rect(Rect2(1, -30, 1, 3), DOURADO)
+	ci.draw_rect(Rect2(-14, -48, 28, 3), MADEIRA.lightened(0.15))
+	# frasco em cima
+	ci.draw_rect(Rect2(-6, -55, 5, 7), Color(0.8, 0.9, 0.9, 0.35))
+	ci.draw_rect(Rect2(-6, -52, 5, 4), Color("8a3bd1"))
+
+
+static func _caixas(ci: CanvasItem) -> void:
+	elipse(ci, Vector2(0, 0), 17, 3, Color(0, 0, 0, 0.4))
+	var papelao := Color("7a5a35")
+	caixa(ci, Rect2(-14, -13, 16, 13), papelao)
+	caixa(ci, Rect2(3, -10, 12, 10), papelao.darkened(0.1))
+	caixa(ci, Rect2(-10, -24, 14, 11), papelao.lightened(0.05))
+	ci.draw_rect(Rect2(-7, -13, 2, 13), Color("a08a60"))
+	ci.draw_rect(Rect2(-4, -24, 2, 11), Color("a08a60"))
+	ci.draw_rect(Rect2(5, -7, 6, 3), Color(0, 0, 0, 0.3))
+
+
+static func _mesa_vela(ci: CanvasItem, t: float) -> void:
+	elipse(ci, Vector2(0, 0), 12, 3, Color(0, 0, 0, 0.4))
+	caixa(ci, Rect2(-8, -12, 2, 12), MADEIRA_ESCURA)
+	caixa(ci, Rect2(6, -12, 2, 12), MADEIRA_ESCURA)
+	caixa(ci, Rect2(-11, -15, 22, 4), MADEIRA)
+	var velas := [Vector2(-5, -15), Vector2(0, -15), Vector2(5, -15)]
+	var alturas := [6.0, 9.0, 5.0]
+	for i in 3:
+		var base: Vector2 = velas[i]
+		var alt: float = alturas[i]
+		ci.draw_rect(Rect2(base.x - 1.5, base.y - alt, 3, alt), Color("e8dcc0"))
+		ci.draw_rect(Rect2(base.x - 1.5, base.y - alt + 2, 1, 3), Color("fff4dc"))
+		_chama(ci, base - Vector2(0, alt), t, i * 2.1)
+
+
+static func _lampiao(ci: CanvasItem, t: float) -> void:
+	elipse(ci, Vector2(0, 0), 7, 2.5, Color(0, 0, 0, 0.4))
+	caixa(ci, Rect2(-5, -4, 10, 4), Color("3a3028"))
+	ci.draw_rect(Rect2(-4, -16, 8, 12), Color(1.0, 0.75, 0.4, 0.35))
+	ci.draw_rect(Rect2(-5, -16, 1, 12), Color("3a3028"))
+	ci.draw_rect(Rect2(4, -16, 1, 12), Color("3a3028"))
+	_chama(ci, Vector2(0, -7), t, 0.0)
+	caixa(ci, Rect2(-5, -19, 10, 3), Color("3a3028"))
+	ci.draw_arc(Vector2(0, -21), 3, PI, TAU, 8, Color("3a3028"), 1.0)
+
+
+static func _cabos(ci: CanvasItem) -> void:
+	ci.draw_polyline(PackedVector2Array([Vector2(-30, 2), Vector2(-18, -2), Vector2(-6, 3), Vector2(8, -1), Vector2(22, 4), Vector2(34, 0)]), Color("141010"), 2.0)
+	ci.draw_polyline(PackedVector2Array([Vector2(-26, 8), Vector2(-12, 5), Vector2(0, 9), Vector2(14, 6), Vector2(26, 10)]), Color("5a1a14"), 1.5)
+	caixa(ci, Rect2(32, -2, 5, 4), Color("2a2a2a"))
+
+
+static func _barril(ci: CanvasItem, t: float) -> void:
+	var gosma := 0.5 + 0.15 * sin(t * 2.0)
+	elipse(ci, Vector2(4, 1), 14, 3.5, Color(0.6, 0.8, 0.2, gosma))
+	elipse(ci, Vector2(0, 0), 11, 3, Color(0, 0, 0, 0.4))
+	caixa(ci, Rect2(-9, -24, 18, 24), Color("4a5228"))
+	ci.draw_rect(Rect2(-9, -20, 18, 2), Color("2e3418"))
+	ci.draw_rect(Rect2(-9, -6, 18, 2), Color("2e3418"))
+	ci.draw_rect(Rect2(-7, -23, 3, 21), Color(1, 1, 1, 0.08))
+	ci.draw_colored_polygon(PackedVector2Array([Vector2(0, -17), Vector2(5, -12), Vector2(0, -7), Vector2(-5, -12)]), Color("d1b02a"))
+	ci.draw_rect(Rect2(-0.5, -15, 1, 4), CONTORNO)
+	ci.draw_rect(Rect2(-0.5, -10, 1, 1), CONTORNO)
+
+
+static func _sucata(ci: CanvasItem) -> void:
+	elipse(ci, Vector2(0, 0), 22, 4, Color(0, 0, 0, 0.4))
+	caixa(ci, Rect2(-20, -10, 18, 10), Color("8a8270"))
+	ci.draw_rect(Rect2(-18, -8, 14, 1), Color("4a4438"))
+	ci.draw_rect(Rect2(-18, -5, 14, 1), Color("4a4438"))
+	caixa(ci, Rect2(-6, -22, 20, 16), Color("b0a888"))
+	ci.draw_rect(Rect2(-4, -20, 16, 11), Color("1e2420"))
+	ci.draw_line(Vector2(-2, -18), Vector2(6, -12), Color(0.6, 0.7, 0.6, 0.4))
+	caixa(ci, Rect2(8, -8, 12, 8), Color("2a2a2e"))
+	ci.draw_rect(Rect2(10, -6, 3, 3), Color("4a6a4a"))
+	ci.draw_polyline(PackedVector2Array([Vector2(14, -8), Vector2(18, -16), Vector2(22, -14)]), Color("141010"), 1.0)
+
+
+static func _quadro(ci: CanvasItem) -> void:
+	caixa(ci, Rect2(-24, -32, 48, 28), MADEIRA)
+	ci.draw_rect(Rect2(-22, -30, 44, 24), Color("1e2e24"))
+	var giz := Color(0.85, 0.85, 0.8, 0.7)
+	var fonte := ThemeDB.fallback_font
+	ci.draw_string(fonte, Vector2(-20, -21), "H2O", HORIZONTAL_ALIGNMENT_LEFT, -1, 7, giz)
+	ci.draw_string(fonte, Vector2(-2, -21), "NaCl", HORIZONTAL_ALIGNMENT_LEFT, -1, 7, giz)
+	ci.draw_string(fonte, Vector2(-20, -11), "Li+ e-", HORIZONTAL_ALIGNMENT_LEFT, -1, 7, giz)
+	ci.draw_line(Vector2(4, -13), Vector2(18, -13), giz)
+	ci.draw_line(Vector2(15, -15), Vector2(18, -13), giz)
+	ci.draw_rect(Rect2(-22, -6, 44, 2), MADEIRA_ESCURA)
+
+
+static func _janela(ci: CanvasItem) -> void:
+	caixa(ci, Rect2(-16, -42, 32, 38), MADEIRA)
+	ci.draw_rect(Rect2(-14, -40, 28, 34), Color("141c28"))
+	elipse(ci, Vector2(6, -32), 4, 4, Color("d8d8c0"))
+	elipse(ci, Vector2(8, -33), 3, 3, Color("141c28"))
+	ci.draw_rect(Rect2(-1, -40, 2, 34), MADEIRA)
+	ci.draw_rect(Rect2(-14, -24, 28, 2), MADEIRA)
+	ci.draw_line(Vector2(-12, -38), Vector2(-4, -28), Color(1, 1, 1, 0.12))
+	ci.draw_rect(Rect2(-18, -5, 36, 3), MADEIRA.lightened(0.12))
+
+
+static func _tabela(ci: CanvasItem) -> void:
+	caixa(ci, Rect2(-24, -34, 48, 28), Color("c8b890"))
+	var cores := [Color("c86a5a"), Color("d8a85a"), Color("7aa86a"), Color("6a8ac8"), Color("a87ac8")]
+	for col in 18:
+		for lin in 6:
+			if lin == 0 and col > 0 and col < 17:
+				continue
+			if lin < 3 and col > 1 and col < 12:
+				continue
+			ci.draw_rect(Rect2(-22 + col * 2.4, -31 + lin * 3.5, 2, 3), cores[(col + lin) % cores.size()])
+	ci.draw_rect(Rect2(-17, -10, 26, 1), Color("6a5a3a"))

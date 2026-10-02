@@ -29,6 +29,11 @@ func _ready() -> void:
 	camera.position_smoothing_speed = 4.5
 	add_child(camera)
 
+	# brilho quente da lanterna em volta do coelho
+	var brilho := Escuridao.brilho(Color(1.0, 0.6, 0.3), 70, 0.16)
+	brilho.position = Vector2(0, -14)
+	add_child(brilho)
+
 	if ResourceLoader.exists(IMAGEM):
 		sprite = Sprite2D.new()
 		sprite.texture = load(IMAGEM)

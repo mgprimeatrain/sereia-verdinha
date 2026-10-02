@@ -7,14 +7,14 @@ const ALTURA := 270.0
 
 const SHADER_VINHETA := """
 shader_type canvas_item;
-uniform float forca = 0.75;
+uniform float forca = 0.95;
 float ruido(vec2 p) { return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453); }
 void fragment() {
 	vec2 uv = UV - vec2(0.5);
 	uv.x *= 1.25;
-	float v = smoothstep(0.32, 0.8, length(uv));
+	float v = smoothstep(0.28, 0.75, length(uv));
 	float grao = ruido(floor(UV * vec2(480.0, 270.0)) + vec2(floor(TIME * 12.0) * 3.1)) * 0.06;
-	COLOR = vec4(0.0, 0.0, 0.02, v * forca + grao);
+	COLOR = vec4(0.02, 0.01, 0.0, v * forca + grao);
 }
 """
 
@@ -101,7 +101,7 @@ func _criar_vinheta() -> void:
 
 
 func _criar_hud() -> void:
-	nome_sala = _label("", 8, Color("e8e8f0"))
+	nome_sala = _label("", 8, Color("e8dcc8"))
 	nome_sala.position = Vector2(8, 5)
 	add_child(nome_sala)
 
@@ -128,7 +128,7 @@ func _criar_hud() -> void:
 func _criar_janela() -> void:
 	janela = PanelContainer.new()
 	estilo_janela = StyleBoxFlat.new()
-	estilo_janela.bg_color = Color(0.05, 0.06, 0.1, 0.96)
+	estilo_janela.bg_color = Color(0.07, 0.05, 0.04, 0.96)
 	estilo_janela.set_border_width_all(2)
 	estilo_janela.set_corner_radius_all(4)
 	estilo_janela.set_content_margin_all(10)
@@ -153,7 +153,7 @@ func _criar_janela() -> void:
 	var moldura := PanelContainer.new()
 	moldura.custom_minimum_size = Vector2(120, 120)
 	moldura_estilo = StyleBoxFlat.new()
-	moldura_estilo.bg_color = Color(0.1, 0.11, 0.16)
+	moldura_estilo.bg_color = Color(0.12, 0.09, 0.07)
 	moldura_estilo.set_border_width_all(1)
 	moldura_estilo.set_corner_radius_all(3)
 	moldura.add_theme_stylebox_override("panel", moldura_estilo)
@@ -172,7 +172,7 @@ func _criar_janela() -> void:
 	destaque = _label("", 18, Color.WHITE)
 	destaque.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	esquerda.add_child(destaque)
-	var legenda := _label("química em destaque", 6, Color("8a8fa0"), 0)
+	var legenda := _label("química em destaque", 6, Color("9a8a78"), 0)
 	legenda.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	esquerda.add_child(legenda)
 
@@ -192,7 +192,7 @@ func _criar_janela() -> void:
 	selo_novo = _label("NOVO!", 9, Color("ffd94a"))
 	cabecalho.add_child(selo_novo)
 
-	texto = _label("", 8, Color("e0e2ea"), 0)
+	texto = _label("", 8, Color("e8dcc8"), 0)
 	texto.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	direita.add_child(texto)
 
@@ -207,7 +207,7 @@ func _criar_janela() -> void:
 	curiosidade.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	caixa_curiosidade.add_child(curiosidade)
 
-	var fechar := _label("[E] fechar", 6, Color("8a8fa0"), 0)
+	var fechar := _label("[E] fechar", 6, Color("9a8a78"), 0)
 	fechar.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	direita.add_child(fechar)
 
@@ -220,22 +220,22 @@ func _criar_titulo() -> void:
 	add_child(titulo)
 
 	var fundo := ColorRect.new()
-	fundo.color = Color("0b0d14")
+	fundo.color = Color("0c0806")
 	fundo.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	titulo.add_child(fundo)
 
 	var luz := TelaDesenho.new()
 	luz.forma = "coelho"
-	luz.escala = 3.0
-	luz.deslocamento = Vector2(0, 52)
+	luz.escala = 2.4
+	luz.deslocamento = Vector2(0, 62)
 	luz.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	titulo.add_child(luz)
 
-	_linha("COELHO CIENTISTA", 26, Color("7fe0ff"), 18, titulo)
-	_linha("e a Química na Tecnologia", 11, Color("ffd94a"), 54, titulo)
+	_linha("COELHO CIENTISTA", 26, Color("f0c070"), 18, titulo)
+	_linha("e a Química na Tecnologia", 11, Color("c8a888"), 54, titulo)
 	texto_comecar = _linha("Aperte E para começar", 10, Color.WHITE, 206, titulo)
-	_linha("WASD ou setas: andar      E: inspecionar      F11: tela cheia", 7, Color("8a8fa0"), 230, titulo)
-	_linha("Feira de Ciências", 6, Color("5a5f70"), 252, titulo)
+	_linha("WASD ou setas: andar      E: inspecionar      F11: tela cheia", 7, Color("9a8a78"), 230, titulo)
+	_linha("Feira de Ciências", 6, Color("6a5a48"), 252, titulo)
 
 
 # ------------------------------------------------------------------ ações

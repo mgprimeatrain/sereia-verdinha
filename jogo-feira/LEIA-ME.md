@@ -67,4 +67,5 @@ Tudo fica em `scripts/dados.gd`: os textos, as cores, as salas e onde cada objet
 - `scripts/objeto.gd`: os componentes que dá para inspecionar
 - `scripts/escuridao.gd`: a escuridão e a luz da lanterna
 - `scripts/interface.gd`: tela de título, HUD e janela de inspeção
-- `scripts/desenhos.gd`: os desenhos provisórios
+- `scripts/desenhos.gd`: os desenhos provisórios (as cores do coelho ficam no começo da parte do coelho)
+- `scripts/movel.gd`: os móveis de decoração (estantes, bancadas, velas...)

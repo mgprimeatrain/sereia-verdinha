@@ -11,6 +11,7 @@ var perto := false
 var destacado := false
 var visto := false
 var tempo := 0.0
+var marcador: Node2D
 
 
 func configurar(id_objeto: String) -> void:
@@ -42,6 +43,12 @@ func configurar(id_objeto: String) -> void:
 	corpo.add_child(forma)
 	add_child(corpo)
 
+	# a tecla E e o "!" ficam por cima da escuridão
+	marcador = Node2D.new()
+	marcador.z_index = 70
+	marcador.draw.connect(_desenhar_marcador)
+	add_child(marcador)
+
 	# brilho colorido em volta do objeto
 	var luz := Escuridao.brilho(cor, 40, 0.35)
 	luz.position = Vector2(0, -20)
@@ -61,12 +68,15 @@ func _corpo_saiu(corpo: Node2D) -> void:
 func _process(delta: float) -> void:
 	tempo += delta
 	queue_redraw()
+	marcador.queue_redraw()
 
 
 func _draw() -> void:
 	Desenhos.elipse(self, Vector2(0, 0), 13, 3.5, Color(0, 0, 0, 0.35))
-	Desenhos.caixa(self, Rect2(-10, -9, 20, 9), Color("2a2d38"))
-	draw_rect(Rect2(-11, -11, 22, 3), Color("4a4f60"))
+	# pedestal de madeira
+	Desenhos.caixa(self, Rect2(-9, -9, 18, 9), Desenhos.MADEIRA_ESCURA)
+	draw_rect(Rect2(-7, -7, 14, 1), Desenhos.MADEIRA)
+	Desenhos.caixa(self, Rect2(-11, -12, 22, 3), Desenhos.MADEIRA.lightened(0.15))
 
 	var y := -27.0 + sin(tempo * 2.0) * 1.5
 	if destacado:
@@ -81,12 +91,16 @@ func _draw() -> void:
 		Desenhos.desenhar(self, info["forma"], cor, tempo)
 	draw_set_transform(Vector2.ZERO)
 
+
+
+func _desenhar_marcador() -> void:
+	var y := -27.0 + sin(tempo * 2.0) * 1.5
 	var fonte := ThemeDB.fallback_font
 	if destacado:
 		var ky := y - 28.0 + sin(tempo * 5.0)
-		Desenhos.caixa(self, Rect2(-5, ky - 5, 10, 10), Color("f0f0f0"))
-		draw_string(fonte, Vector2(-5, ky + 3), "E", HORIZONTAL_ALIGNMENT_CENTER, 10, 9, Color("1a1620"))
+		Desenhos.caixa(marcador, Rect2(-5, ky - 5, 10, 10), Color("f0e6d0"))
+		marcador.draw_string(fonte, Vector2(-5, ky + 3), "E", HORIZONTAL_ALIGNMENT_CENTER, 10, 9, Color("1a1620"))
 	elif not visto:
 		var ey := y - 22.0 + absf(sin(tempo * 4.0)) * -3.0
-		draw_string_outline(fonte, Vector2(-5, ey), "!", HORIZONTAL_ALIGNMENT_CENTER, 10, 12, 3, Color("1a1620"))
-		draw_string(fonte, Vector2(-5, ey), "!", HORIZONTAL_ALIGNMENT_CENTER, 10, 12, Color("ffd94a"))
+		marcador.draw_string_outline(fonte, Vector2(-5, ey), "!", HORIZONTAL_ALIGNMENT_CENTER, 10, 12, 3, Color("1a1620"))
+		marcador.draw_string(fonte, Vector2(-5, ey), "!", HORIZONTAL_ALIGNMENT_CENTER, 10, 12, Color("ffc040"))
