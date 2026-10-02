@@ -30,28 +30,31 @@ O mapa, os móveis e os objetos ficam em `scripts/dados.gd`.
 
 ## Sprites do coelho
 
-Tudo na pasta `arte/`, em **PNG com fundo transparente**. Pode colocar só
-algumas: o jogo usa o que tiver.
+Coloque na pasta `arte/` (**PNG com fundo transparente**) arquivos com o nome:
 
-**Imagens paradas, uma para cada direção** (o coelho bem recortado, sem sobra):
+```
+coelho_<ação>_<direção>_<colunas>x<linhas>.png
+```
 
-| Arquivo | Quando aparece |
+- **ação:** `parado`, `andando`, `correndo` ou `pulando`
+- **direção:** `frente` (andando para baixo), `costas` (para cima) ou `lado`
+  (desenhe virado para a **direita**; o jogo espelha para a esquerda)
+- **colunas x linhas:** quantos quadros a folha tem. Todos os quadros precisam
+  ter o mesmo tamanho. Se for uma imagem só, pode deixar sem: `coelho_parado_frente.png`
+
+Exemplos:
+
+| Arquivo | O que é |
 |---|---|
-| `arte/coelho_frente.png` | andando para baixo |
-| `arte/coelho_costas.png` | andando para cima |
-| `arte/coelho_lado.png` | olhando para os lados (desenhe virado para a **direita**) |
+| `coelho_parado_frente.png` | parado, de frente (1 imagem) |
+| `coelho_andando_frente_8x3.png` | andando de frente, 24 quadros em 8 colunas e 3 linhas |
+| `coelho_andando_costas_8x3.png` | andando de costas |
+| `coelho_correndo_lado_7x3.png` | correndo de lado |
+| `coelho_pulando_lado_12x2.png` | pulando de lado |
 
-**Animações de lado** (folha com os quadros do mesmo tamanho, em grade, virado
-para a direita). Quando existem, são usadas ao andar para os lados:
-
-| Arquivo | Animação | Grade esperada |
-|---|---|---|
-| `arte/coelho_andando.png` | andando | 8 colunas × 3 linhas |
-| `arte/coelho_correndo.png` | correndo | 7 colunas × 3 linhas |
-| `arte/coelho_pulando.png` | pulando | 12 colunas × 2 linhas |
-
-Se a grade for diferente, mude `colunas` e `linhas` no começo de
-`scripts/jogador.gd`. Sem nenhuma imagem, o jogo usa o coelho desenhado por código.
+Pode colocar só algumas: o que faltar é trocado pela imagem mais parecida que
+existir (por exemplo, sem "correndo de frente" ele usa "andando de frente").
+Sem nenhuma imagem, o jogo usa o coelho desenhado por código.
 
 ## Imagens dos componentes
 
