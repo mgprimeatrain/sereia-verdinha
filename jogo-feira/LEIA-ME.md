@@ -36,7 +36,7 @@ Coloque na pasta `arte/` (**PNG com fundo transparente**) arquivos com o nome:
 coelho_<ação>_<direção>_<colunas>x<linhas>.png
 ```
 
-- **ação:** `parado`, `andando`, `correndo` ou `pulando`
+- **ação:** `parado`, `andando`, `correndo` ou `pulando` (a ação e a direção podem vir em qualquer ordem)
 - **direção:** `frente` (andando para baixo), `costas` (para cima) ou `lado`
   (desenhe virado para a **direita**; o jogo espelha para a esquerda)
 - **colunas x linhas:** quantos quadros a folha tem. Todos os quadros precisam

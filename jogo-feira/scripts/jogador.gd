@@ -5,6 +5,7 @@ extends Node2D
 ##
 ## Imagens do coelho: coloque na pasta arte/ (PNG com fundo transparente)
 ## arquivos com o nome   coelho_<ação>_<direção>_<colunas>x<linhas>.png
+## (a ação e a direção podem vir em qualquer ordem)
 ##   ação:     parado, andando, correndo, pulando
 ##   direção:  frente, costas, lado   (o de lado virado para a DIREITA)
 ##   grade:    quantos quadros a folha tem (ex.: 8x3). Imagem com um quadro só
@@ -83,8 +84,19 @@ func _carregar_sprites() -> void:
 			if not tem_grade:
 				grade = NOMES_ANTIGOS[chave][1]
 			chave = NOMES_ANTIGOS[chave][0]
-		var acao := chave.get_slice("_", 0)
-		if not (acao in ACOES and chave.get_slice("_", 1) in VISTAS) or quadros.has_animation(chave):
+		# aceita as duas ordens: coelho_andando_frente e coelho_frente_andando
+		var acao := ""
+		var olhando := ""
+		for parte in chave.split("_"):
+			if parte in ACOES:
+				acao = parte
+			elif parte in VISTAS:
+				olhando = parte
+		if acao == "" or olhando == "":
+			push_warning("Sprite com nome que o jogo não entendeu: " + nome)
+			continue
+		chave = acao + "_" + olhando
+		if quadros.has_animation(chave):
 			continue
 		var folha: Texture2D = load(PASTA + nome)
 		if folha == null:
@@ -100,6 +112,7 @@ func _carregar_sprites() -> void:
 				quadro.region = Rect2(Vector2(coluna, linha) * tam, tam)
 				quadros.add_frame(chave, quadro)
 		alturas[chave] = tam.y
+	print("Sprites do coelho carregados: ", quadros.get_animation_names())
 	if quadros.get_animation_names().is_empty():
 		return
 	sprite = AnimatedSprite2D.new()
