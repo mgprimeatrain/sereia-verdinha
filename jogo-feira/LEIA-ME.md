@@ -30,17 +30,28 @@ O mapa, os móveis e os objetos ficam em `scripts/dados.gd`.
 
 ## Sprites do coelho
 
-Coloque na pasta `arte/` (PNG com **fundo transparente**, todos os quadros do
-mesmo tamanho, em grade, com o coelho virado para a **direita**):
+Tudo na pasta `arte/`, em **PNG com fundo transparente**. Pode colocar só
+algumas: o jogo usa o que tiver.
+
+**Imagens paradas, uma para cada direção** (o coelho bem recortado, sem sobra):
+
+| Arquivo | Quando aparece |
+|---|---|
+| `arte/coelho_frente.png` | andando para baixo |
+| `arte/coelho_costas.png` | andando para cima |
+| `arte/coelho_lado.png` | olhando para os lados (desenhe virado para a **direita**) |
+
+**Animações de lado** (folha com os quadros do mesmo tamanho, em grade, virado
+para a direita). Quando existem, são usadas ao andar para os lados:
 
 | Arquivo | Animação | Grade esperada |
 |---|---|---|
-| `arte/coelho_andando.png` | andando (o 1º quadro é usado parado) | 8 colunas × 3 linhas |
+| `arte/coelho_andando.png` | andando | 8 colunas × 3 linhas |
 | `arte/coelho_correndo.png` | correndo | 7 colunas × 3 linhas |
 | `arte/coelho_pulando.png` | pulando | 12 colunas × 2 linhas |
 
-Se a grade da sua imagem for diferente, mude `colunas` e `linhas` no começo de
-`scripts/jogador.gd`. Sem essas imagens, o jogo usa o coelho desenhado por código.
+Se a grade for diferente, mude `colunas` e `linhas` no começo de
+`scripts/jogador.gd`. Sem nenhuma imagem, o jogo usa o coelho desenhado por código.
 
 ## Imagens dos componentes
 
