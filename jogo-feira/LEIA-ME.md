@@ -15,26 +15,40 @@ de um laboratório e inspeciona componentes eletrônicos, aprendendo a química 
 | Tecla | O que faz |
 |---|---|
 | WASD ou setas | Andar |
-| E (ou Enter/Espaço) | Inspecionar / fechar a janela |
+| Shift (segurando) | Correr |
+| Espaço | Pular |
+| E ou Enter | Inspecionar / fechar a janela |
 | F11 | Tela cheia |
 | F2 | Recomeçar do zero (para o próximo visitante da feira) |
 
-## Salas
+## O mapa
 
-- **Laboratório**: a sala do meio, com portas para todas as outras
-- **Energia**: pilha alcalina, bateria de lítio, painel solar
-- **Processamento**: wafer de silício, transistor, processador
-- **Telas**: LCD, OLED, tela touch (e, à direita, o **Lixo Eletrônico**)
-- **Museu**: pilha de Volta, válvula, TV de tubo, disquete
+É um prédio só, visto na diagonal. O **Laboratório** fica no meio e tem
+passagens para a **Energia** (esquerda), **Telas** (direita, e de lá para o
+**Lixo Eletrônico**), **Processamento** (cima) e **Museu** (baixo).
+O mapa, os móveis e os objetos ficam em `scripts/dados.gd`.
 
-## Como colocar a arte (sprites)
+## Sprites do coelho
 
-O jogo funciona sem nenhuma imagem, usando desenhos provisórios. Para trocar,
-basta colocar um **PNG com fundo transparente** com o nome certo:
+Coloque na pasta `arte/` (PNG com **fundo transparente**, todos os quadros do
+mesmo tamanho, em grade, com o coelho virado para a **direita**):
+
+| Arquivo | Animação | Grade esperada |
+|---|---|---|
+| `arte/coelho_andando.png` | andando (o 1º quadro é usado parado) | 8 colunas × 3 linhas |
+| `arte/coelho_correndo.png` | correndo | 7 colunas × 3 linhas |
+| `arte/coelho_pulando.png` | pulando | 12 colunas × 2 linhas |
+
+Se a grade da sua imagem for diferente, mude `colunas` e `linhas` no começo de
+`scripts/jogador.gd`. Sem essas imagens, o jogo usa o coelho desenhado por código.
+
+## Imagens dos componentes
+
+O jogo funciona sem imagens, usando desenhos provisórios. Para trocar,
+coloque um **PNG com fundo transparente** com o nome certo:
 
 | Arquivo | O que é |
 |---|---|
-| `arte/coelho.png` | O coelho cientista |
 | `arte/componentes/pilha_alcalina.png` | Pilha alcalina |
 | `arte/componentes/bateria_litio.png` | Bateria de íon-lítio |
 | `arte/componentes/painel_solar.png` | Painel solar |
@@ -62,7 +76,8 @@ Tudo fica em `scripts/dados.gd`: os textos, as cores, as salas e onde cada objet
 ## Arquivos
 
 - `scripts/main.gd`: controla o jogo (título, troca de sala, inspeção, coleção)
-- `scripts/sala.gd`: monta cada sala (chão, paredes, portas, objetos)
+- `scripts/mapa.gd`: monta o mapa inteiro (chão, paredes, móveis, objetos)
+- `scripts/parede.gd`: os blocos de parede (ficam transparentes quando tampam o coelho)
 - `scripts/jogador.gd`: o coelho e a câmera que segue ele
 - `scripts/objeto.gd`: os componentes que dá para inspecionar
 - `scripts/escuridao.gd`: a escuridão e a luz da lanterna

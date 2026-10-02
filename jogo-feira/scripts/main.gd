@@ -1,21 +1,25 @@
 extends Node
-## Controla o jogo: tela de título, troca de salas, inspeção e coleção.
+## Controla o jogo: tela de título, mapa, inspeção e coleção.
 ## Teclas extras: F11 = tela cheia, F2 = recomeçar (para o próximo visitante da feira).
+## Shift = correr, Espaço = pular.
 
 const CONTROLES := {
 	"cima": [KEY_W, KEY_UP],
 	"baixo": [KEY_S, KEY_DOWN],
 	"esquerda": [KEY_A, KEY_LEFT],
 	"direita": [KEY_D, KEY_RIGHT],
-	"interagir": [KEY_E, KEY_ENTER, KEY_KP_ENTER, KEY_SPACE],
+	"interagir": [KEY_E, KEY_ENTER, KEY_KP_ENTER],
+	"pular": [KEY_SPACE],
+	"correr": [KEY_SHIFT],
 	"cancelar": [KEY_ESCAPE],
 	"tela_cheia": [KEY_F11],
 	"recomecar": [KEY_F2],
 }
 
 var mundo: Node2D
+var mapa: Mapa
 var jogador: Jogador
-var sala: Sala
+var sala_atual := ""
 var ui: Interface
 var estado := "titulo"  # titulo, jogando, inspecionando, trocando_sala
 var vistos := {}
@@ -32,7 +36,7 @@ func _ready() -> void:
 	# O mundo é desenhado em baixa resolução (320x180) e ampliado,
 	# por isso fica com cara de pixel art e a câmera fica bem perto do coelho.
 	# A interface fica nítida por cima.
-	RenderingServer.set_default_clear_color(Color.BLACK)
+	RenderingServer.set_default_clear_color(Color("0e0806"))
 	var tela := SubViewportContainer.new()
 	tela.process_mode = Node.PROCESS_MODE_PAUSABLE
 	tela.scale = Vector2(1.5, 1.5)
@@ -44,15 +48,19 @@ func _ready() -> void:
 	viewport.canvas_item_default_texture_filter = Viewport.DEFAULT_CANVAS_ITEM_TEXTURE_FILTER_NEAREST
 	tela.add_child(viewport)
 
-	mundo = Node2D.new()
-	viewport.add_child(mundo)
+	mapa = Mapa.new()
+	viewport.add_child(mapa)
+	mapa.montar()
 	jogador = Jogador.new()
+	jogador.mapa = mapa
+	mapa.add_child(jogador)
+	jogador.posicionar(Mapa.centro(Dados.INICIO))
+	mapa.escuridao.alvo = jogador
+	Parede.alvo = jogador
 
 	ui = Interface.new()
 	add_child(ui)
 	ui.atualizar_contador(0, total)
-
-	_carregar_sala(Dados.SALA_INICIAL, "")
 	get_tree().paused = true
 
 
@@ -84,7 +92,7 @@ func _input(event: InputEvent) -> void:
 				estado = "jogando"
 				get_tree().paused = false
 				ui.esconder_titulo()
-				ui.mostrar_sala(sala.dados["nome"])
+				_atualizar_sala()
 		"jogando":
 			if event.is_action_pressed("interagir") and proximo:
 				_abrir(proximo)
@@ -96,53 +104,49 @@ func _input(event: InputEvent) -> void:
 func _process(_delta: float) -> void:
 	if estado != "jogando":
 		return
+	_atualizar_sala()
 	# acha o objeto mais perto do coelho (se tiver algum ao alcance)
 	var melhor: Inspecionavel = null
-	var menor := INF
-	for objeto in sala.objetos:
-		if objeto.perto:
-			var d := objeto.position.distance_to(jogador.position)
-			if d < menor:
-				menor = d
-				melhor = objeto
-	for objeto in sala.objetos:
+	var menor := 26.0
+	for objeto in mapa.objetos:
+		var d := objeto.logico.distance_to(jogador.logico)
+		if d < menor:
+			menor = d
+			melhor = objeto
+	for objeto in mapa.objetos:
 		objeto.destacado = objeto == melhor
 	proximo = melhor
 	ui.mostrar_dica("[E] Inspecionar: " + melhor.info["nome"] if melhor else "")
 
 
-func _carregar_sala(id: String, origem: String) -> void:
-	if sala:
-		sala.remove_child(jogador)
-		sala.queue_free()
-	sala = Sala.new()
-	sala.configurar(id)
-	mundo.add_child(sala)
-	sala.porta_tocada.connect(_trocar_sala)
-	for objeto in sala.objetos:
-		objeto.visto = vistos.has(objeto.id)
-
-	sala.add_child(jogador)
-	jogador.position = sala.ponto_chegada(origem)
-	jogador.direcao = sala.direcao_chegada(origem)
-	jogador.ajustar_camera(sala.tamanho)
-	sala.escuridao.alvo = jogador
-	proximo = null
-
-
-func _trocar_sala(destino: String) -> void:
-	if estado != "jogando":
+## Quando o coelho entra em outra sala: a tela escurece, volta e mostra o nome dela.
+func _atualizar_sala() -> void:
+	var id := mapa.sala_em(jogador.logico)
+	if id == "" or id == sala_atual:
+		return
+	var primeira_vez := sala_atual == ""
+	sala_atual = id
+	if primeira_vez:
+		_mostrar_sala(id)
 		return
 	estado = "trocando_sala"
 	ui.mostrar_dica("")
 	jogador.set_physics_process(false)
 	await ui.fade(true)
-	_carregar_sala(destino, sala.id)
-	ui.mostrar_sala(sala.dados["nome"])
-	await get_tree().process_frame
+	_mostrar_sala(id)
 	jogador.set_physics_process(true)
 	await ui.fade(false)
 	estado = "jogando"
+
+
+func _mostrar_sala(id: String) -> void:
+	ui.mostrar_sala(Dados.SALAS[id]["nome"])
+	# a sala atual (com as paredes do fundo) fica visível; o resto some no escuro
+	var area: Rect2i = Dados.SALAS[id]["area"]
+	var r := Rect2(Vector2(area.position - Vector2i(3, 3)), Vector2(area.size + Vector2i(4, 4)))
+	mapa.escuridao.definir_sala(Rect2(r.position * Mapa.CELULA, r.size * Mapa.CELULA))
+	for objeto in mapa.objetos:
+		objeto.marcador.visible = objeto.sala == id
 
 
 func _contar_achados() -> int:

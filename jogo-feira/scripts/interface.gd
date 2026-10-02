@@ -7,7 +7,7 @@ const ALTURA := 270.0
 
 const SHADER_VINHETA := """
 shader_type canvas_item;
-uniform float forca = 0.95;
+uniform float forca = 0.6;
 float ruido(vec2 p) { return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453); }
 void fragment() {
 	vec2 uv = UV - vec2(0.5);
@@ -234,7 +234,7 @@ func _criar_titulo() -> void:
 	_linha("COELHO CIENTISTA", 26, Color("f0c070"), 18, titulo)
 	_linha("e a Química na Tecnologia", 11, Color("c8a888"), 54, titulo)
 	texto_comecar = _linha("Aperte E para começar", 10, Color.WHITE, 206, titulo)
-	_linha("WASD ou setas: andar      E: inspecionar      F11: tela cheia", 7, Color("9a8a78"), 230, titulo)
+	_linha("WASD/setas: andar    Shift: correr    Espaço: pular    E: inspecionar    F11: tela cheia", 7, Color("9a8a78"), 230, titulo)
 	_linha("Feira de Ciências", 6, Color("6a5a48"), 252, titulo)
 
 

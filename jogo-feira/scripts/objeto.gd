@@ -1,5 +1,5 @@
 class_name Inspecionavel
-extends Area2D
+extends Node2D
 ## Um componente em cima de um pedestal. Quando o coelho chega perto,
 ## aparece a tecla E e dá para abrir a janela de inspeção.
 
@@ -7,11 +7,12 @@ var id := ""
 var info: Dictionary
 var cor := Color.WHITE
 var textura: Texture2D
-var perto := false
+var logico := Vector2.ZERO  # posição na grade reta do mapa
 var destacado := false
 var visto := false
 var tempo := 0.0
 var marcador: Node2D
+var sala := ""
 
 
 func configurar(id_objeto: String) -> void:
@@ -23,26 +24,6 @@ func configurar(id_objeto: String) -> void:
 	if ResourceLoader.exists(caminho):
 		textura = load(caminho)
 
-	# área onde o coelho consegue inspecionar
-	var alcance := CollisionShape2D.new()
-	var circulo := CircleShape2D.new()
-	circulo.radius = 28
-	alcance.shape = circulo
-	alcance.position = Vector2(0, -4)
-	add_child(alcance)
-	body_entered.connect(_corpo_entrou)
-	body_exited.connect(_corpo_saiu)
-
-	# pedestal sólido (o coelho não atravessa)
-	var corpo := StaticBody2D.new()
-	var forma := CollisionShape2D.new()
-	var ret := RectangleShape2D.new()
-	ret.size = Vector2(22, 8)
-	forma.shape = ret
-	forma.position = Vector2(0, -3)
-	corpo.add_child(forma)
-	add_child(corpo)
-
 	# a tecla E e o "!" ficam por cima da escuridão
 	marcador = Node2D.new()
 	marcador.z_index = 70
@@ -50,19 +31,9 @@ func configurar(id_objeto: String) -> void:
 	add_child(marcador)
 
 	# brilho colorido em volta do objeto
-	var luz := Escuridao.brilho(cor, 40, 0.35)
+	var luz := Escuridao.brilho(cor, 36, 0.25)
 	luz.position = Vector2(0, -20)
 	add_child(luz)
-
-
-func _corpo_entrou(corpo: Node2D) -> void:
-	if corpo is Jogador:
-		perto = true
-
-
-func _corpo_saiu(corpo: Node2D) -> void:
-	if corpo is Jogador:
-		perto = false
 
 
 func _process(delta: float) -> void:

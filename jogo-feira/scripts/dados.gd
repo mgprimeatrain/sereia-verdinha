@@ -1,136 +1,94 @@
 class_name Dados
 extends RefCounted
-## Todo o conteúdo do jogo fica aqui: as salas e os componentes.
+## Todo o conteúdo do jogo fica aqui: o mapa, as salas e os componentes.
+##
+## O mapa é uma grade de células (cada célula é um quadradinho do chão).
+## As posições abaixo são em células: Vector2i(coluna, linha).
+## Na tela, a grade aparece inclinada (na diagonal).
+##
 ## Para adicionar um componente novo:
 ##   1. crie uma entrada em COMPONENTES (copie uma que já existe);
-##   2. coloque o id dele na lista "objetos" de alguma sala, com a posição.
-## O chão das salas começa em y = 64 (abaixo da parede do fundo).
-##
-## "moveis" são a decoração. Tipos: estante, bancada, armario, caixas,
-## mesa_vela, lampiao, cabos, barril, sucata (no chão) e quadro, janela,
-## tabela (penduradas na parede: só o x importa).
+##   2. coloque o id dele em OBJETOS, com a célula onde ele fica.
 
-const SALA_INICIAL := "laboratorio"
+const TAMANHO_MAPA := Vector2i(40, 36)
+const INICIO := Vector2i(20, 21)
 
+## Cada sala é um retângulo de chão: Rect2i(coluna, linha, largura, altura).
 const SALAS := {
 	"laboratorio": {
-		"nome": "Laboratório do Coelho",
-		"curto": "Laboratório",
-		"tamanho": Vector2(448, 320),
-		"cor": Color("e0a050"),
-		"papel": Color("3a2a1e"),
-		"madeira": Color("4a3020"),
-		"tapete": Color("3a1a14"),
-		"portas": {"cima": "processamento", "esquerda": "energia", "direita": "telas", "baixo": "museu"},
-		"objetos": [["boas_vindas", Vector2(224, 160)]],
-		"moveis": [
-			["estante", Vector2(56, 74)], ["quadro", Vector2(130, 0)], ["bancada", Vector2(330, 78)],
-			["armario", Vector2(408, 74)], ["mesa_vela", Vector2(70, 262)], ["caixas", Vector2(392, 272)],
-			["cabos", Vector2(320, 200)],
-		],
+		"nome": "Laboratório do Coelho", "area": Rect2i(14, 14, 12, 10),
+		"papel": Color("3a2a1e"), "madeira": Color("4a3020"), "tapete": Color("3a1a14"),
 	},
 	"energia": {
-		"nome": "Sala da Energia",
-		"curto": "Energia",
-		"tamanho": Vector2(512, 288),
-		"cor": Color("f0b040"),
-		"papel": Color("3d2c18"),
-		"madeira": Color("4a3220"),
-		"tapete": Color("33280f"),
-		"portas": {"direita": "laboratorio"},
-		"objetos": [
-			["pilha_alcalina", Vector2(120, 150)],
-			["bateria_litio", Vector2(256, 215)],
-			["painel_solar", Vector2(390, 140)],
-		],
-		"moveis": [
-			["estante", Vector2(56, 74)], ["janela", Vector2(160, 0)], ["bancada", Vector2(256, 78)],
-			["tabela", Vector2(380, 0)], ["lampiao", Vector2(462, 92)], ["mesa_vela", Vector2(80, 252)],
-			["caixas", Vector2(440, 262)], ["cabos", Vector2(180, 250)],
-		],
-	},
-	"processamento": {
-		"nome": "Sala do Processamento",
-		"curto": "Processamento",
-		"tamanho": Vector2(448, 352),
-		"cor": Color("9ad060"),
-		"papel": Color("2a2a1c"),
-		"madeira": Color("3e2c1e"),
-		"tapete": Color("1c2416"),
-		"portas": {"baixo": "laboratorio"},
-		"objetos": [
-			["wafer", Vector2(110, 160)],
-			["transistor", Vector2(338, 160)],
-			["processador", Vector2(224, 240)],
-		],
-		"moveis": [
-			["bancada", Vector2(100, 78)], ["estante", Vector2(224, 74)], ["bancada", Vector2(340, 78)],
-			["armario", Vector2(416, 74)], ["mesa_vela", Vector2(50, 312)], ["caixas", Vector2(396, 312)],
-			["cabos", Vector2(150, 300)],
-		],
+		"nome": "Sala da Energia", "area": Rect2i(2, 14, 10, 10),
+		"papel": Color("3d2c18"), "madeira": Color("4a3220"), "tapete": Color("33280f"),
 	},
 	"telas": {
-		"nome": "Sala das Telas",
-		"curto": "Telas",
-		"tamanho": Vector2(512, 288),
-		"cor": Color("d080e0"),
-		"papel": Color("2e2024"),
-		"madeira": Color("402a20"),
-		"tapete": Color("2c1622"),
-		"portas": {"esquerda": "laboratorio", "direita": "lixo"},
-		"objetos": [
-			["tela_lcd", Vector2(140, 135)],
-			["tela_oled", Vector2(372, 135)],
-			["tela_touch", Vector2(256, 230)],
-		],
-		"moveis": [
-			["estante", Vector2(56, 74)], ["quadro", Vector2(170, 0)], ["armario", Vector2(256, 74)],
-			["janela", Vector2(350, 0)], ["bancada", Vector2(448, 78)], ["caixas", Vector2(50, 262)],
-			["lampiao", Vector2(462, 250)], ["cabos", Vector2(330, 190)],
-		],
+		"nome": "Sala das Telas", "area": Rect2i(28, 14, 10, 10),
+		"papel": Color("2e2024"), "madeira": Color("402a20"), "tapete": Color("2c1622"),
 	},
-	"lixo": {
-		"nome": "Ferro-Velho Eletrônico",
-		"curto": "Lixo Eletrônico",
-		"tamanho": Vector2(480, 320),
-		"cor": Color("b0c040"),
-		"papel": Color("2c2a1a"),
-		"madeira": Color("3a3020"),
-		"tapete": Color("00000000"),
-		"portas": {"esquerda": "telas"},
-		"objetos": [
-			["placa_velha", Vector2(150, 140)],
-			["bateria_inchada", Vector2(330, 150)],
-			["pilhas_usadas", Vector2(240, 250)],
-		],
-		"moveis": [
-			["barril", Vector2(44, 86)], ["sucata", Vector2(230, 80)], ["sucata", Vector2(420, 84)],
-			["lampiao", Vector2(120, 86)], ["barril", Vector2(440, 280)], ["barril", Vector2(416, 290)],
-			["caixas", Vector2(70, 290)], ["cabos", Vector2(340, 240)], ["sucata", Vector2(380, 220)],
-		],
+	"processamento": {
+		"nome": "Sala do Processamento", "area": Rect2i(15, 2, 10, 10),
+		"papel": Color("2a2a1c"), "madeira": Color("3e2c1e"), "tapete": Color("1c2416"),
 	},
 	"museu": {
-		"nome": "Museu da Tecnologia",
-		"curto": "Museu",
-		"tamanho": Vector2(576, 288),
-		"cor": Color("e0a060"),
-		"papel": Color("3a1a16"),
-		"madeira": Color("4a2e1c"),
-		"tapete": Color("3c1612"),
-		"portas": {"cima": "laboratorio"},
-		"objetos": [
-			["pilha_volta", Vector2(100, 150)],
-			["valvula", Vector2(220, 220)],
-			["tv_tubo", Vector2(356, 220)],
-			["disquete", Vector2(476, 150)],
-		],
-		"moveis": [
-			["estante", Vector2(48, 74)], ["quadro", Vector2(140, 0)], ["armario", Vector2(220, 74)],
-			["armario", Vector2(356, 74)], ["janela", Vector2(440, 0)], ["estante", Vector2(528, 74)],
-			["mesa_vela", Vector2(288, 262)], ["lampiao", Vector2(40, 250)], ["caixas", Vector2(540, 262)],
-		],
+		"nome": "Museu da Tecnologia", "area": Rect2i(12, 26, 16, 8),
+		"papel": Color("3a1a16"), "madeira": Color("4a2e1c"), "tapete": Color("3c1612"),
+	},
+	"lixo": {
+		"nome": "Ferro-Velho Eletrônico", "area": Rect2i(29, 26, 10, 8),
+		"papel": Color("2c2a1a"), "madeira": Color("3a3020"), "tapete": Color(0, 0, 0, 0),
 	},
 }
+
+## Passagens que ligam as salas (buracos nas paredes).
+const PASSAGENS := [
+	Rect2i(12, 18, 2, 2),  # energia - laboratório
+	Rect2i(26, 18, 2, 2),  # laboratório - telas
+	Rect2i(19, 12, 2, 2),  # processamento - laboratório
+	Rect2i(19, 24, 2, 2),  # laboratório - museu
+	Rect2i(32, 24, 2, 2),  # telas - lixo
+]
+
+## Componentes que dá para inspecionar.
+const OBJETOS := [
+	["boas_vindas", Vector2i(18, 17)],
+	["pilha_alcalina", Vector2i(4, 17)], ["bateria_litio", Vector2i(7, 20)], ["painel_solar", Vector2i(9, 16)],
+	["wafer", Vector2i(17, 5)], ["transistor", Vector2i(22, 5)], ["processador", Vector2i(17, 9)],
+	["tela_lcd", Vector2i(30, 16)], ["tela_oled", Vector2i(35, 16)], ["tela_touch", Vector2i(29, 21)],
+	["placa_velha", Vector2i(30, 28)], ["bateria_inchada", Vector2i(36, 28)], ["pilhas_usadas", Vector2i(33, 31)],
+	["pilha_volta", Vector2i(14, 28)], ["valvula", Vector2i(17, 31)], ["tv_tubo", Vector2i(23, 31)], ["disquete", Vector2i(26, 28)],
+]
+
+## Decoração. No chão: estante, bancada, armario, caixas, mesa_vela, lampiao,
+## cabos, barril, sucata. Na parede (use a célula da parede): quadro, janela, tabela.
+const MOVEIS := [
+	# laboratório
+	["estante", Vector2i(14, 14)], ["bancada", Vector2i(23, 14)], ["armario", Vector2i(25, 15)],
+	["mesa_vela", Vector2i(15, 22)], ["caixas", Vector2i(24, 22)], ["cabos", Vector2i(22, 19)],
+	["quadro", Vector2i(16, 13)], ["tabela", Vector2i(22, 13)], ["janela", Vector2i(13, 16)],
+	# energia
+	["estante", Vector2i(2, 14)], ["bancada", Vector2i(6, 14)], ["lampiao", Vector2i(10, 14)],
+	["mesa_vela", Vector2i(3, 22)], ["caixas", Vector2i(10, 22)], ["cabos", Vector2i(6, 18)],
+	["janela", Vector2i(4, 13)], ["tabela", Vector2i(8, 13)], ["quadro", Vector2i(1, 19)],
+	# telas
+	["estante", Vector2i(28, 14)], ["armario", Vector2i(33, 14)], ["bancada", Vector2i(36, 14)],
+	["caixas", Vector2i(37, 22)], ["lampiao", Vector2i(36, 20)], ["cabos", Vector2i(34, 19)],
+	["quadro", Vector2i(30, 13)], ["janela", Vector2i(27, 16)],
+	# processamento
+	["bancada", Vector2i(16, 2)], ["estante", Vector2i(20, 2)], ["bancada", Vector2i(23, 2)],
+	["caixas", Vector2i(23, 10)], ["mesa_vela", Vector2i(15, 10)], ["cabos", Vector2i(21, 8)],
+	["tabela", Vector2i(18, 1)], ["quadro", Vector2i(22, 1)], ["janela", Vector2i(14, 6)],
+	# museu
+	["estante", Vector2i(12, 26)], ["armario", Vector2i(16, 26)], ["armario", Vector2i(23, 26)],
+	["estante", Vector2i(27, 26)], ["mesa_vela", Vector2i(20, 30)], ["lampiao", Vector2i(12, 32)],
+	["caixas", Vector2i(27, 32)], ["quadro", Vector2i(14, 25)], ["janela", Vector2i(24, 25)],
+	["tabela", Vector2i(11, 29)],
+	# lixo eletrônico
+	["barril", Vector2i(29, 26)], ["sucata", Vector2i(35, 26)], ["lampiao", Vector2i(31, 26)],
+	["sucata", Vector2i(38, 30)], ["barril", Vector2i(38, 33)], ["barril", Vector2i(37, 33)],
+	["caixas", Vector2i(29, 32)], ["cabos", Vector2i(34, 29)], ["janela", Vector2i(37, 25)],
+]
 
 ## "forma" escolhe o desenho provisório (veja desenhos.gd).
 ## "destaque" aparece grande na janela de inspeção (de preferência um elemento químico).
@@ -293,8 +251,7 @@ static func conta(id: String) -> bool:
 
 static func total_componentes() -> int:
 	var total := 0
-	for sala in SALAS.values():
-		for item in sala["objetos"]:
-			if conta(item[0]):
-				total += 1
+	for item in OBJETOS:
+		if conta(item[0]):
+			total += 1
 	return total

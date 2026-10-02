@@ -1,6 +1,7 @@
 class_name Movel
 extends Node2D
 ## Um móvel de decoração (estante, bancada, velas...). O ponto (0, 0) fica na base.
+## Quadros, janelas e tabelas ficam dentro de uma Parede, inclinados junto com ela.
 
 const ANIMADOS := ["mesa_vela", "lampiao", "bancada", "barril"]
 
