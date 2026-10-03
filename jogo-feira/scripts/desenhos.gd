@@ -78,6 +78,12 @@ static func desenhar(ci: CanvasItem, forma: String, cor: Color, t: float) -> voi
 		"gabinete": _gabinete(ci, cor)
 		"minerio": _minerio(ci, cor)
 		"terminal": _terminal(ci, cor, t)
+		"radio": _radio(ci, cor)
+		"telefone": _telefone(ci, cor)
+		"ssd": _ssd(ci, cor)
+		"hd": _hd(ci, cor, t)
+		"gpu": _gpu(ci, cor, t)
+		"ram": _ram(ci, cor)
 		_: caixa(ci, Rect2(-10, -10, 20, 20), cor)
 
 
@@ -458,6 +464,97 @@ static func _terminal(ci: CanvasItem, cor: Color, t: float) -> void:
 	elipse(ci, Vector2(0, 6), 1.3, 1.3, Color("f0c040"))
 	elipse(ci, Vector2(5, 6), 2, 2, CONTORNO)
 	elipse(ci, Vector2(5, 6), 1.3, 1.3, Color("5ac85a"))
+
+
+static func _radio(ci: CanvasItem, cor: Color) -> void:
+	caixa(ci, Rect2(-14, -12, 28, 22), cor)
+	# topo arredondado de madeira
+	elipse(ci, Vector2(0, -12), 14.5, 5.5, CONTORNO)
+	elipse(ci, Vector2(0, -12), 13.5, 4.5, cor)
+	ci.draw_rect(Rect2(-13, -12, 26, 3), cor)
+	# alto-falante com tecido
+	caixa(ci, Rect2(-11, -9, 13, 12), Color("d8c8a0"))
+	for x in range(-10, 2, 2):
+		ci.draw_line(Vector2(x, -8), Vector2(x, 2), Color("a89870"))
+	# mostrador e botões
+	caixa(ci, Rect2(4, -9, 7, 5), Color("f0e0a0"))
+	ci.draw_line(Vector2(7, -9), Vector2(8, -5), Color("e04a3a"))
+	elipse(ci, Vector2(5.5, 3), 2, 2, CONTORNO)
+	elipse(ci, Vector2(5.5, 3), 1.3, 1.3, Color("5a3a20"))
+	elipse(ci, Vector2(9.5, 3), 2, 2, CONTORNO)
+	elipse(ci, Vector2(9.5, 3), 1.3, 1.3, Color("5a3a20"))
+	ci.draw_rect(Rect2(-13, -11, 26, 1), Color(1, 1, 1, 0.2))
+
+
+static func _telefone(ci: CanvasItem, cor: Color) -> void:
+	# telefone "castiçal": base, haste, bocal e o fone pendurado
+	elipse(ci, Vector2(0, 12), 8, 3, CONTORNO)
+	elipse(ci, Vector2(0, 11), 7, 2.5, cor)
+	caixa(ci, Rect2(-1.5, -10, 3, 21), cor)
+	poligono(ci, PackedVector2Array([Vector2(-4, -15), Vector2(4, -15), Vector2(2, -10), Vector2(-2, -10)]), cor)
+	elipse(ci, Vector2(0, -15), 4.5, 1.8, CONTORNO)
+	elipse(ci, Vector2(0, -15), 3.5, 1.2, Color("15151a"))
+	# gancho e fone
+	ci.draw_line(Vector2(1.5, -4), Vector2(6, -4), CONTORNO, 1.0)
+	caixa(ci, Rect2(6, -8, 3, 11), cor)
+	caixa(ci, Rect2(5, -9, 5, 2), cor)
+	ci.draw_polyline(PackedVector2Array([Vector2(7.5, 3), Vector2(9, 8), Vector2(6, 11), Vector2(2, 12)]), Color("5a3a20"), 1.0)
+	ci.draw_rect(Rect2(-1, -9, 1, 18), Color(1, 1, 1, 0.15))
+
+
+static func _ssd(ci: CanvasItem, cor: Color) -> void:
+	caixa(ci, Rect2(-13, -9, 26, 18), Color("2a2e36"))
+	ci.draw_rect(Rect2(-11, -7, 22, 14), Color("3a404a"))
+	caixa(ci, Rect2(-9, -5, 18, 7), cor)
+	var fonte := ThemeDB.fallback_font
+	ci.draw_string(fonte, Vector2(-9, 1), "SSD", HORIZONTAL_ALIGNMENT_CENTER, 18, 6, Color.WHITE)
+	for i in 6:
+		ci.draw_rect(Rect2(-8 + i * 3, 9, 2, 2), DOURADO)
+
+
+static func _hd(ci: CanvasItem, cor: Color, t: float) -> void:
+	caixa(ci, Rect2(-12, -14, 24, 28), cor)
+	elipse(ci, Vector2(0, -2), 10, 10, CONTORNO)
+	elipse(ci, Vector2(0, -2), 9, 9, Color("d8dce4"))
+	elipse(ci, Vector2(0, -2), 6, 6, Color("c0c6d0"))
+	# reflexo girando no disco
+	var a := t * 6.0
+	ci.draw_line(Vector2(0, -2) + Vector2(cos(a), sin(a)) * 2.5, Vector2(0, -2) + Vector2(cos(a), sin(a)) * 8.5, Color(1, 1, 1, 0.8), 1.0)
+	elipse(ci, Vector2(0, -2), 2, 2, METAL_ESCURO)
+	# braço da agulha
+	ci.draw_line(Vector2(9, 10), Vector2(3, 0), METAL_ESCURO, 2.0)
+	elipse(ci, Vector2(9, 10), 2.5, 2.5, CONTORNO)
+	elipse(ci, Vector2(9, 10), 1.8, 1.8, METAL)
+
+
+static func _gpu(ci: CanvasItem, cor: Color, t: float) -> void:
+	# placa verde com conector dourado embaixo
+	for i in 8:
+		ci.draw_rect(Rect2(-10 + i * 2.5, 9, 1.5, 3), DOURADO)
+	caixa(ci, Rect2(-15, -10, 30, 19), Color("2a7a4a"))
+	# capa preta com ventoinhas
+	caixa(ci, Rect2(-14, -12, 28, 16), Color("26282e"))
+	ci.draw_rect(Rect2(-14, -12, 28, 2), cor)
+	for x in [-7.0, 7.0]:
+		elipse(ci, Vector2(x, -4), 5.5, 5.5, CONTORNO)
+		elipse(ci, Vector2(x, -4), 4.5, 4.5, Color("3a3e46"))
+		var a := t * 10.0
+		for k in 3:
+			var ang := a + k * TAU / 3.0
+			ci.draw_line(Vector2(x, -4), Vector2(x, -4) + Vector2(cos(ang), sin(ang)) * 4.0, METAL, 1.0)
+		elipse(ci, Vector2(x, -4), 1.2, 1.2, cor)
+	# chip aparecendo
+	ci.draw_rect(Rect2(-3, 5, 6, 3), PRATA)
+
+
+static func _ram(ci: CanvasItem, cor: Color) -> void:
+	caixa(ci, Rect2(-15, -7, 30, 14), Color("2a7a4a"))
+	ci.draw_rect(Rect2(-15, -7, 30, 2), cor)
+	for i in 4:
+		caixa(ci, Rect2(-13 + i * 7, -3, 5, 6), Color("1e1e22"))
+	for i in 12:
+		ci.draw_rect(Rect2(-14 + i * 2.4, 7, 1.5, 3), DOURADO)
+	ci.draw_rect(Rect2(-1, 7, 2, 3), Color(0, 0, 0, 0))
 
 
 # ---------------------------------------------------------------- móveis

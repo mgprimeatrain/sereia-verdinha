@@ -45,6 +45,11 @@ const SALAS := {
 		"papel": Color("5a2a24"), "madeira": Color("6a4428"), "tapete": Color("6a1a18"),
 		"antigo": true, "escuro": 0.72,
 	},
+	"computador": {
+		"nome": "Sala do Computador", "area": Rect2i(2, 2, 10, 10),
+		"fala": "Aqui ficam as peças de dentro do computador! Cada uma é feita de vários elementos químicos diferentes. Vamos ver quais?",
+		"papel": Color("e2eaf4"), "madeira": Color("d0d4da"), "tapete": Color("4a90d9"),
+	},
 	"materiais": {
 		"nome": "Sala dos Materiais", "area": Rect2i(27, 2, 10, 10),
 		"fala": "A química transforma matérias-primas em peças de tecnologia. Cada material desta sala resolveu um problema dos aparelhos antigos!",
@@ -65,6 +70,7 @@ const PASSAGENS := [
 	Rect2i(19, 24, 2, 2),  # laboratório - museu
 	Rect2i(32, 24, 2, 2),  # telas - lixo
 	Rect2i(25, 6, 2, 2),  # processamento - materiais
+	Rect2i(12, 6, 3, 2),  # computador - processamento
 ]
 
 ## Componentes que dá para inspecionar.
@@ -72,7 +78,8 @@ const OBJETOS := [
 	["boas_vindas", Vector2i(18, 17)], ["terminal_quiz", Vector2i(22, 17)],
 	["fio_cobre", Vector2i(29, 5)], ["contato_ouro", Vector2i(34, 5)], ["plastico", Vector2i(32, 7)],
 	["carcaca_aluminio", Vector2i(29, 9)], ["vidro_tela", Vector2i(34, 9)],
-	["tijolao", Vector2i(21, 28)], ["gabinete_ferro", Vector2i(15, 32)], ["minerio", Vector2i(36, 31)],
+	["tijolao", Vector2i(21, 28)], ["radio", Vector2i(18, 28)], ["telefone", Vector2i(25, 30)],
+	["ssd", Vector2i(4, 5)], ["hd", Vector2i(9, 5)], ["placa_video", Vector2i(4, 9)], ["memoria_ram", Vector2i(9, 9)], ["gabinete_ferro", Vector2i(15, 32)], ["minerio", Vector2i(36, 31)],
 	["pilha_alcalina", Vector2i(4, 17)], ["bateria_litio", Vector2i(7, 20)], ["painel_solar", Vector2i(9, 16)],
 	["wafer", Vector2i(17, 5)], ["transistor", Vector2i(22, 5)], ["processador", Vector2i(17, 9)],
 	["tela_lcd", Vector2i(30, 16)], ["tela_oled", Vector2i(35, 16)], ["tela_touch", Vector2i(29, 21)],
@@ -101,12 +108,16 @@ const MOVEIS := [
 	# processamento
 	["bancada_moderna", Vector2i(16, 2)], ["servidor", Vector2i(20, 2)], ["servidor", Vector2i(21, 2)], ["bancada_moderna", Vector2i(23, 2)],
 	["caixas", Vector2i(23, 10)], ["planta", Vector2i(15, 10)], ["cabos", Vector2i(21, 8)],
-	["tabela", Vector2i(18, 1)], ["tela_parede", Vector2i(22, 1)], ["janela_moderna", Vector2i(14, 6)],
+	["tabela", Vector2i(18, 1)], ["tela_parede", Vector2i(22, 1)], ["janela_moderna", Vector2i(14, 10)],
 	# museu
 	["estante", Vector2i(12, 26)], ["armario", Vector2i(16, 26)], ["armario", Vector2i(23, 26)],
 	["estante", Vector2i(27, 26)], ["mesa_vela", Vector2i(20, 30)], ["lampiao", Vector2i(12, 32)],
 	["mesa_vela", Vector2i(27, 32)], ["mesa_vela", Vector2i(12, 29)], ["quadro", Vector2i(14, 25)], ["janela", Vector2i(24, 25)],
 	["tabela", Vector2i(11, 29)],
+	# computador
+	["servidor", Vector2i(2, 2)], ["bancada_moderna", Vector2i(6, 2)], ["estante_metal", Vector2i(10, 2)],
+	["planta", Vector2i(2, 11)], ["caixas", Vector2i(11, 11)], ["luminaria", Vector2i(7, 11)], ["cabos", Vector2i(6, 7)],
+	["tela_parede", Vector2i(4, 1)], ["janela_moderna", Vector2i(9, 1)], ["lousa", Vector2i(1, 7)],
 	# materiais
 	["estante_metal", Vector2i(27, 2)], ["bancada_moderna", Vector2i(31, 2)], ["armario_branco", Vector2i(36, 3)],
 	["planta", Vector2i(36, 10)], ["caixas", Vector2i(28, 11)], ["luminaria", Vector2i(31, 11)],
@@ -256,6 +267,40 @@ const COMPONENTES := {
 		"curiosidade": "Reciclar alumínio gasta só cerca de 5% da energia que seria usada para fazer alumínio novo a partir do minério!",
 	},
 
+	# ---------- PEÇAS DO COMPUTADOR ----------
+	"ssd": {
+		"nome": "SSD",
+		"forma": "ssd",
+		"cor": Color("4a90d9"),
+		"destaque": "Si",
+		"texto": "O SSD guarda os arquivos em chips de memória feitos de silício, que prendem elétrons em \"gaiolinhas\" minúsculas. Ele não tem nenhuma peça que se mexe!\nElementos: silício (chips), cobre (trilhas), ouro (contatos) e estanho (solda).",
+		"curiosidade": "Como não tem nada girando, o SSD é muito mais rápido que o HD e aguenta melhor uma queda.",
+	},
+	"hd": {
+		"nome": "HD (disco rígido)",
+		"forma": "hd",
+		"cor": Color("b8c0cc"),
+		"destaque": "Co",
+		"texto": "O HD guarda os dados num disco que gira muito rápido. O disco é coberto por uma camada magnética de cobalto (Co) e platina (Pt), e uma agulha com um ímã de neodímio (Nd) magnetiza pedacinhos dessa camada.\nElementos: alumínio ou vidro (disco), cobalto e platina (camada magnética), neodímio (ímã) e cobre (motor).",
+		"curiosidade": "A cabeça que lê os dados voa sobre o disco a uma distância milhares de vezes menor que a espessura de um fio de cabelo!",
+	},
+	"placa_video": {
+		"nome": "Placa de vídeo",
+		"forma": "gpu",
+		"cor": Color("5ac87a"),
+		"destaque": "Si",
+		"texto": "A placa de vídeo desenha as imagens dos jogos e vídeos. O chip dela, de silício, tem bilhões de transistores, e ela esquenta tanto que precisa de um dissipador de metal e de ventoinhas.\nElementos: silício (chip), cobre e alumínio (dissipador), ouro (contatos), tântalo (capacitores) e estanho (solda).",
+		"curiosidade": "O chip de uma placa de vídeo faz trilhões de contas por segundo para desenhar cada cena de um jogo!",
+	},
+	"memoria_ram": {
+		"nome": "Memória RAM",
+		"forma": "ram",
+		"cor": Color("e05a5a"),
+		"destaque": "Si Au",
+		"texto": "A memória RAM guarda o que o computador está usando agora, como o jogo aberto. Ela é feita de chips de silício numa plaquinha, com contatos dourados na ponta.\nElementos: silício (chips), ouro (contatos), cobre (trilhas) e estanho (solda).",
+		"curiosidade": "Quando o computador desliga, a RAM esquece tudo! Por isso é preciso salvar os arquivos no SSD ou no HD.",
+	},
+
 	# ---------- MATERIAIS ----------
 	"fio_cobre": {
 		"nome": "Fio de cobre",
@@ -306,6 +351,22 @@ const COMPONENTES := {
 		"destaque": "Ni Cd",
 		"texto": "Os primeiros celulares eram enormes e pesavam quase 1 kg! Tinham muito plástico comum e uma bateria pesada de níquel e cádmio (Ni e Cd), que durava pouco: dava para falar só uns 30 minutos.",
 		"curiosidade": "Ele demorava umas 10 horas para carregar e só fazia ligações: nada de fotos, jogos ou internet!",
+	},
+	"radio": {
+		"nome": "Rádio antigo",
+		"forma": "radio",
+		"cor": Color("c88a4a"),
+		"destaque": "Pb S",
+		"texto": "Os primeiros rádios, por volta de 1910, usavam um cristal chamado galena (sulfeto de chumbo, PbS) para captar o sinal, e funcionavam até sem pilha! Depois vieram os rádios de válvula, grandes e com caixa de madeira, que ficavam no meio da sala.",
+		"curiosidade": "O cristal de galena foi um dos primeiros semicondutores usados na tecnologia: um \"avô\" do transistor!",
+	},
+	"telefone": {
+		"nome": "Primeiro telefone (1876)",
+		"forma": "telefone",
+		"cor": Color("3a3a42"),
+		"destaque": "C",
+		"texto": "Em 1876, Alexander Graham Bell patenteou o telefone. Pouco depois, os telefones passaram a usar um microfone com grãozinhos de carvão (carbono, C): a voz apertava os grãos, a eletricidade passava mais ou menos, e o som viajava pelo fio de cobre.",
+		"curiosidade": "Esse microfone de carvão foi usado nos telefones por quase 100 anos!",
 	},
 	"gabinete_ferro": {
 		"nome": "Computador antigo",

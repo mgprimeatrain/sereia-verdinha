@@ -14,10 +14,23 @@ var face_sul := true
 var face_leste := true
 var papel := Color("3a2a1e")
 var antiga := false  # museu: papel de parede e rodapé de madeira; senão, parede lisa moderna
+var salas_fundo := {}  # salas para as quais esta é uma parede do fundo (alta)
+var salas_frente := {}  # salas para as quais esta é uma parede da frente (baixa)
 
 
-func _ready() -> void:
+## Ajusta a parede para a sala onde o coelho está: some se não for dessa sala,
+## e fica alta ou baixa conforme o lado da sala em que ela está.
+func usar_sala(id: String) -> void:
+	visible = salas_fundo.has(id) or salas_frente.has(id)
+	if not visible:
+		return
+	alta = not salas_frente.has(id)
+	papel = Dados.SALAS[id]["papel"]
+	antiga = Dados.SALAS[id].get("antigo", false)
 	set_process(alta)
+	if not alta:
+		modulate.a = 1.0
+	queue_redraw()
 
 
 func _process(delta: float) -> void:

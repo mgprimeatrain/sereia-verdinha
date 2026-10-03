@@ -23,10 +23,13 @@ de um laboratório e inspeciona componentes eletrônicos, aprendendo a química 
 
 ## O mapa
 
+Tem um mapa visto de cima, com todas as salas e componentes numerados, em
+`docs/mapa_do_jogo.png` (ele não aparece dentro do jogo).
+
 É um prédio só, visto na diagonal. O **Laboratório** fica no meio e tem
 passagens para a **Energia** (esquerda), **Telas** (direita, e de lá para o
 **Lixo Eletrônico**), **Processamento** (cima, e de lá para a **Sala dos
-Materiais**) e **Museu** (baixo).
+Materiais** e para a **Sala do Computador**) e **Museu** (baixo).
 
 Na primeira vez em cada sala, o coelho explica o tema dela (frases do roteiro
 da apresentação). No Laboratório tem o **Terminal do Quiz**, com as perguntas
@@ -39,10 +42,11 @@ O mapa, os móveis, os objetos, as falas e as perguntas do quiz ficam em
 
 | Sala | Parte da apresentação | Objetos |
 |---|---|---|
-| Museu | Evolução dos materiais | pilha de Volta, válvula, TV de tubo, disquete, celular tijolão, computador antigo |
+| Museu | Evolução dos materiais | primeiro telefone, rádio antigo, pilha de Volta, válvula, TV de tubo, disquete, celular tijolão, computador antigo |
 | Sala dos Materiais | Materiais e química | fio de cobre, conector de ouro, notebook de alumínio e magnésio, vidro da tela, plástico |
 | Energia | Lítio | pilha alcalina, bateria de lítio, painel solar |
 | Processamento | Silício | wafer, transistor, processador |
+| Sala do Computador | Peças e seus elementos | SSD, HD, placa de vídeo, memória RAM |
 | Telas | Materiais especiais | LCD, OLED, tela touch |
 | Lixo Eletrônico | Fabricação e impactos | minério (bauxita), placa velha, bateria estufada, pilhas usadas |
 | Laboratório | Finalização e jogo | Terminal do Quiz |
@@ -116,6 +120,12 @@ coloque um **PNG com fundo transparente** com o nome certo:
 | `arte/componentes/gabinete_ferro.png` | Computador antigo |
 | `arte/componentes/minerio.png` | Minério (bauxita) |
 | `arte/componentes/terminal_quiz.png` | Terminal do quiz |
+| `arte/componentes/radio.png` | Rádio antigo |
+| `arte/componentes/telefone.png` | Primeiro telefone |
+| `arte/componentes/ssd.png` | SSD |
+| `arte/componentes/hd.png` | HD |
+| `arte/componentes/placa_video.png` | Placa de vídeo |
+| `arte/componentes/memoria_ram.png` | Memória RAM |
 
 Depois de colocar os arquivos, volte para o Godot (ele importa sozinho) e aperte F5.
 

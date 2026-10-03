@@ -71,6 +71,8 @@ func montar() -> void:
 func mostrar_sala(id: String) -> void:
 	for item in por_sala:
 		item[0].visible = item[1] == id
+	for c in paredes:
+		paredes[c].usar_sala(id)
 
 
 func eh_chao(c: Vector2i) -> bool:
@@ -112,26 +114,40 @@ func _criar_paredes() -> void:
 			if not perto_do_chao:
 				continue
 			var parede := Parede.new()
-			# paredes "da frente" (com chão atrás delas) ficam baixas para não tampar a visão
-			parede.alta = not (chao.has(c + Vector2i(0, -1)) or chao.has(c + Vector2i(-1, 0)) or chao.has(c + Vector2i(-1, -1)))
 			parede.face_sul = not _eh_parede(c + Vector2i(0, 1))
 			parede.face_leste = not _eh_parede(c + Vector2i(1, 0))
-			# a parede pertence à sala para onde ela está virada
-			var lado := [Vector2i(0, 1), Vector2i(1, 0), Vector2i(1, 1)] if parede.alta else [Vector2i(0, -1), Vector2i(-1, 0), Vector2i(-1, -1)]
-			var dona := ""
-			for d in lado:
-				var id: String = chao.get(c + d, "")
-				if id != "":
-					dona = id
-					break
-			if dona == "":
-				dona = _sala_vizinha(c)
-			parede.papel = Dados.SALAS[dona]["papel"]
-			parede.antiga = Dados.SALAS[dona].get("antigo", false)
-			por_sala.append([parede, dona])
+			# Uma parede pode separar duas salas. Para a sala que fica "na frente"
+			# dela (chão em +x/+y) ela é a parede do fundo: alta. Para a sala que
+			# fica atrás (chão em -x/-y) ela é a parede da frente: baixinha.
+			for d in [Vector2i(0, 1), Vector2i(1, 0), Vector2i(1, 1), Vector2i(1, -1), Vector2i(-1, 1)]:
+				for id in _salas_em(c + d):
+					parede.salas_fundo[id] = true
+			for d in [Vector2i(0, -1), Vector2i(-1, 0), Vector2i(-1, -1)]:
+				for id in _salas_em(c + d):
+					parede.salas_frente[id] = true
+					parede.salas_fundo.erase(id)
+			parede.usar_sala((parede.salas_fundo.keys() + parede.salas_frente.keys())[0])
 			parede.position = iso(centro(c))
 			add_child(parede)
 			paredes[c] = parede
+
+
+## Salas de uma célula de chão (uma passagem pertence às duas salas que ela liga).
+func _salas_em(c: Vector2i) -> Array:
+	if not chao.has(c):
+		return []
+	var id: String = chao[c]
+	if id != "":
+		return [id]
+	var salas := []
+	for passagem in Dados.PASSAGENS:
+		if passagem.has_point(c):
+			for x in range(passagem.position.x - 1, passagem.end.x + 1):
+				for y in range(passagem.position.y - 1, passagem.end.y + 1):
+					var outra: String = chao.get(Vector2i(x, y), "")
+					if outra != "" and outra not in salas:
+						salas.append(outra)
+	return salas
 
 
 func _eh_parede(c: Vector2i) -> bool:

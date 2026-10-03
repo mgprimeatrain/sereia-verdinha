@@ -22,7 +22,7 @@ void fragment() {
 	// fora da sala atual fica quase tudo preto
 	vec2 l = vec2(p.y + p.x * 0.5, p.y - p.x * 0.5);
 	float fora = max(max(sala.x - l.x, l.x - sala.z), max(sala.y - l.y, l.y - sala.w));
-	float some = smoothstep(0.0, 14.0, fora);
+	float some = smoothstep(0.0, 6.0, fora);
 	vec2 achata = vec2(1.0, 1.6);
 	float d = distance(p * achata, jogador * achata);
 	float luz = pow(1.0 - smoothstep(0.0, raio_jogador, d), 1.4);
