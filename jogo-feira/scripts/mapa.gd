@@ -202,9 +202,8 @@ func _desenhar_piso() -> void:
 		var area: Rect2i = Dados.SALAS[id]["area"]
 		var r := Rect2(Vector2(area.position) * CELULA, Vector2(area.size) * CELULA).grow(-CELULA * 2.5)
 		_quad(r.position, Vector2(r.end.x, r.position.y), r.end, Vector2(r.position.x, r.end.y), tapete)
-		var borda := r.grow(-3)
-		_contorno(borda, tapete.lightened(0.25))
-		_contorno(borda.grow(-3), tapete.darkened(0.3))
+		_contorno(r, Desenhos.CONTORNO)
+		_contorno(r.grow(-4), tapete.lightened(0.3))
 
 
 func _ruido(a: int, b: int) -> float:

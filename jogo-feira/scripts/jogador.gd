@@ -16,7 +16,7 @@ extends Node2D
 
 const VELOCIDADE := 75.0
 const VELOCIDADE_CORRENDO := 130.0
-const ALTURA_NA_TELA := 46.0  # altura do quadro do coelho em pixels do jogo
+const ALTURA_NA_TELA := 40.0  # altura do quadro do coelho em pixels do jogo
 const PASTA := "res://arte/"
 const ACOES := ["parado", "andando", "correndo", "pulando"]
 const VISTAS := ["frente", "costas", "lado"]
@@ -117,7 +117,7 @@ func _carregar_sprites() -> void:
 		return
 	sprite = AnimatedSprite2D.new()
 	sprite.sprite_frames = quadros
-	sprite.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
+	sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	add_child(sprite)
 
 
@@ -146,7 +146,7 @@ func _physics_process(delta: float) -> void:
 		passo = 0.0
 	position = Mapa.iso(logico)
 
-	var olhar := entrada * Vector2(28, 18)
+	var olhar := entrada * Vector2(20, 12)
 	camera.offset = camera.offset.lerp(olhar, delta * 1.5)
 
 	# pulo: um arco de 0,5 segundo

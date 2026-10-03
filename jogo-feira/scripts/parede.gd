@@ -44,10 +44,10 @@ func _draw() -> void:
 	draw_colored_polygon(PackedVector2Array([a + h, b + h, c + h, d + h]), topo)
 	# contorno preto grosso, como o do coelho
 	if face_sul:
-		draw_line(d + h, c + h, contorno, 2.0)
+		draw_line(d + h, c + h, contorno, 1.0)
 		draw_line(d, c, contorno, 1.0)
 	if face_leste:
-		draw_line(c + h, b + h, contorno, 2.0)
+		draw_line(c + h, b + h, contorno, 1.0)
 		draw_line(c, b, contorno, 1.0)
 	if face_sul and face_leste:
 		draw_line(c, c + h, contorno, 1.0)
