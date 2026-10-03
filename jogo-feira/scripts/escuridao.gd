@@ -57,8 +57,11 @@ func configurar(retangulo: Rect2) -> void:
 
 
 ## Só a sala atual fica visível (área em pixels da grade reta do mapa).
-func definir_sala(area: Rect2) -> void:
+## "nivel" é o quanto ela fica no escuro (o Museu é bem escuro, o resto é claro).
+func definir_sala(area: Rect2, nivel := 0.12) -> void:
 	_material.set_shader_parameter("sala", Vector4(area.position.x, area.position.y, area.end.x, area.end.y))
+	_material.set_shader_parameter("escuridao", nivel)
+	_material.set_shader_parameter("tom", Color(0.06, 0.03, 0.02) if nivel > 0.4 else Color(0.08, 0.08, 0.1))
 
 
 ## Adiciona uma luz parada (posição, raio, força).

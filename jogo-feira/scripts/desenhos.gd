@@ -484,6 +484,7 @@ static func luz_movel(tipo: String) -> Vector3:
 	match tipo:
 		"mesa_vela": return Vector3(-20, 75, 0.95)
 		"lampiao": return Vector3(-18, 70, 0.9)
+		"luminaria": return Vector3(-30, 60, 0.5)
 		"bancada": return Vector3(-24, 32, 0.35)
 	return Vector3.ZERO
 
@@ -508,6 +509,16 @@ static func movel(ci: CanvasItem, tipo: String, t: float) -> void:
 		"quadro": _quadro(ci)
 		"janela": _janela(ci)
 		"tabela": _tabela(ci)
+		"estante_metal": _estante_metal(ci)
+		"bancada_moderna": _bancada_moderna(ci, t)
+		"armario_branco": _armario_branco(ci)
+		"luminaria": _luminaria(ci)
+		"planta": _planta(ci)
+		"servidor": _servidor(ci, t)
+		"lixeiras": _lixeiras(ci)
+		"lousa": _lousa(ci)
+		"tela_parede": _tela_parede(ci, t)
+		"janela_moderna": _janela_moderna(ci)
 
 
 static func _estante(ci: CanvasItem) -> void:
@@ -682,3 +693,142 @@ static func _tabela(ci: CanvasItem) -> void:
 				continue
 			ci.draw_rect(Rect2(-22 + col * 2.4, -31 + lin * 3.5, 2, 3), cores[(col + lin) % cores.size()])
 	ci.draw_rect(Rect2(-17, -10, 26, 1), Color("6a5a3a"))
+
+
+# ---------------------------------------------------------------- móveis modernos
+
+const BRANCO := Color("eef1f4")
+const METAL := Color("9aa2ac")
+const METAL_ESCURO := Color("5e6670")
+
+
+static func _estante_metal(ci: CanvasItem) -> void:
+	elipse(ci, Vector2(2, 0), 22, 4, SOMBRA)
+	caixa(ci, Rect2(-18, -50, 2, 50), METAL)
+	caixa(ci, Rect2(16, -50, 2, 50), METAL)
+	var cores := [Color("4a90d9"), Color("f0a830"), Color("5ac87a"), Color("e05a5a"), BRANCO, Color("9c6fd6")]
+	for prateleira in 3:
+		var y := -48 + prateleira * 16
+		caixa(ci, Rect2(-16, y + 13, 32, 2), METAL)
+		# caixas organizadoras coloridas
+		caixa(ci, Rect2(-14, y + 4, 12, 9), cores[(prateleira * 2) % cores.size()])
+		caixa(ci, Rect2(1, y + 6, 13, 7), cores[(prateleira * 2 + 1) % cores.size()])
+		ci.draw_rect(Rect2(-10, y + 7, 4, 1), Color(1, 1, 1, 0.6))
+		ci.draw_rect(Rect2(5, y + 8, 5, 1), Color(1, 1, 1, 0.6))
+
+
+static func _bancada_moderna(ci: CanvasItem, t: float) -> void:
+	elipse(ci, Vector2(2, 0), 30, 4, SOMBRA)
+	caixa(ci, Rect2(-23, -14, 2, 14), METAL_ESCURO)
+	caixa(ci, Rect2(21, -14, 2, 14), METAL_ESCURO)
+	caixa(ci, Rect2(-20, -14, 14, 10), BRANCO.darkened(0.08))
+	ci.draw_rect(Rect2(-15, -10, 4, 1), METAL_ESCURO)
+	caixa(ci, Rect2(-26, -18, 52, 4), BRANCO)
+	# notebook
+	ci.draw_colored_polygon(PackedVector2Array([Vector2(-22, -18), Vector2(-10, -18), Vector2(-12, -20), Vector2(-20, -20)]), METAL)
+	caixa(ci, Rect2(-20, -28, 9, 8), METAL_ESCURO)
+	ci.draw_rect(Rect2(-19, -27, 7, 6), Color("4a90d9"))
+	# microscópio
+	caixa(ci, Rect2(-3, -20, 7, 2), METAL_ESCURO)
+	caixa(ci, Rect2(0, -30, 2, 10), BRANCO)
+	caixa(ci, Rect2(-2, -32, 5, 3), METAL_ESCURO)
+	# béquer com líquido verde borbulhando
+	ci.draw_rect(Rect2(10, -27, 7, 9), Color(0.85, 0.95, 1.0, 0.5))
+	ci.draw_rect(Rect2(10, -23, 7, 5), Color("5ac87a"))
+	ci.draw_rect(Rect2(10, -27, 1, 9), CONTORNO)
+	ci.draw_rect(Rect2(16, -27, 1, 9), CONTORNO)
+	var b := fmod(t * 5.0, 5.0)
+	elipse(ci, Vector2(13, -23 - b), 0.7, 0.7, Color(0.9, 1, 0.9, 1.0 - b / 5.0))
+
+
+static func _armario_branco(ci: CanvasItem) -> void:
+	elipse(ci, Vector2(2, 0), 16, 4, SOMBRA)
+	caixa(ci, Rect2(-13, -46, 26, 46), BRANCO)
+	ci.draw_rect(Rect2(-11, -44, 10, 28), Color(0.7, 0.85, 0.95, 0.6))
+	ci.draw_rect(Rect2(1, -44, 10, 28), Color(0.7, 0.85, 0.95, 0.6))
+	ci.draw_line(Vector2(0, -44), Vector2(0, -16), METAL)
+	for i in 3:
+		ci.draw_rect(Rect2(-9 + i * 7, -38, 3, 6), [Color("e05a5a"), Color("4a90d9"), Color("f0a830")][i])
+		ci.draw_rect(Rect2(-8 + i * 7, -26, 3, 7), [Color("5ac87a"), Color("9c6fd6"), BRANCO][i])
+	ci.draw_line(Vector2(-11, -30), Vector2(11, -30), METAL)
+	caixa(ci, Rect2(-11, -13, 22, 10), BRANCO.darkened(0.06))
+	ci.draw_rect(Rect2(-3, -9, 6, 1), METAL_ESCURO)
+
+
+static func _luminaria(ci: CanvasItem) -> void:
+	elipse(ci, Vector2(2, 0), 7, 2.5, SOMBRA)
+	caixa(ci, Rect2(-5, -3, 10, 3), METAL_ESCURO)
+	ci.draw_rect(Rect2(-0.5, -28, 1.5, 25), METAL_ESCURO)
+	elipse(ci, Vector2(0, -31), 6.5, 4.5, CONTORNO)
+	elipse(ci, Vector2(0, -31), 5.5, 3.5, Color("fff6e0"))
+	elipse(ci, Vector2(-1, -32), 2.5, 1.5, Color.WHITE)
+
+
+static func _planta(ci: CanvasItem) -> void:
+	elipse(ci, Vector2(2, 0), 8, 3, SOMBRA)
+	caixa(ci, Rect2(-5, -10, 10, 10), BRANCO)
+	ci.draw_rect(Rect2(-5, -10, 10, 2), METAL)
+	var folha := Color("4caf6a")
+	for f in [[Vector2(-5, -16), 4.0, 6.0], [Vector2(4, -17), 4.0, 6.0], [Vector2(0, -21), 4.5, 7.0], [Vector2(-3, -24), 3.0, 4.5], [Vector2(3, -25), 3.0, 4.5]]:
+		elipse(ci, f[0], f[1] + 1, f[2] + 1, CONTORNO)
+	for f in [[Vector2(-5, -16), 4.0, 6.0], [Vector2(4, -17), 4.0, 6.0], [Vector2(0, -21), 4.5, 7.0], [Vector2(-3, -24), 3.0, 4.5], [Vector2(3, -25), 3.0, 4.5]]:
+		elipse(ci, f[0], f[1], f[2], folha)
+		elipse(ci, f[0] + Vector2(-1, -1), f[1] * 0.4, f[2] * 0.4, folha.lightened(0.25))
+
+
+static func _servidor(ci: CanvasItem, t: float) -> void:
+	elipse(ci, Vector2(2, 0), 12, 4, SOMBRA)
+	caixa(ci, Rect2(-9, -46, 18, 46), Color("2a2e36"))
+	for i in 8:
+		var y := -43 + i * 5
+		ci.draw_rect(Rect2(-7, y, 14, 4), Color("3a404a"))
+		var pisca := fmod(t * (2.0 + i * 0.7) + i, 2.0) < 1.2
+		ci.draw_rect(Rect2(3, y + 1, 1, 1), Color("5aff8a") if pisca else Color("2a5a3a"))
+		ci.draw_rect(Rect2(5, y + 1, 1, 1), Color("4ad0ff") if (i + int(t * 3.0)) % 3 == 0 else Color("2a3a5a"))
+		ci.draw_rect(Rect2(-6, y + 1, 6, 1), Color("1e2228"))
+
+
+static func _lixeiras(ci: CanvasItem) -> void:
+	elipse(ci, Vector2(2, 0), 26, 4, SOMBRA)
+	# cores da reciclagem: azul papel, vermelho plástico, verde vidro, amarelo metal
+	var cores := [Color("3a7ad9"), Color("e04a3a"), Color("3aa85a"), Color("f0c030")]
+	for i in 4:
+		var x := -22 + i * 11
+		caixa(ci, Rect2(x, -16, 10, 16), cores[i])
+		caixa(ci, Rect2(x - 1, -18, 12, 3), cores[i].darkened(0.2))
+		ci.draw_rect(Rect2(x + 3, -11, 4, 4), Color(1, 1, 1, 0.7))
+
+
+static func _lousa(ci: CanvasItem) -> void:
+	caixa(ci, Rect2(-24, -34, 48, 28), METAL)
+	ci.draw_rect(Rect2(-22, -32, 44, 24), Color("fafcff"))
+	var fonte := ThemeDB.fallback_font
+	ci.draw_string(fonte, Vector2(-20, -23), "Si", HORIZONTAL_ALIGNMENT_LEFT, -1, 7, Color("2a6ad9"))
+	ci.draw_string(fonte, Vector2(-8, -23), "Cu", HORIZONTAL_ALIGNMENT_LEFT, -1, 7, Color("d9602a"))
+	ci.draw_string(fonte, Vector2(5, -23), "Li", HORIZONTAL_ALIGNMENT_LEFT, -1, 7, Color("2aa85a"))
+	ci.draw_line(Vector2(-20, -16), Vector2(-4, -16), Color("2a2a30"))
+	ci.draw_line(Vector2(-7, -18), Vector2(-4, -16), Color("2a2a30"))
+	ci.draw_rect(Rect2(2, -18, 14, 5), Color(0.95, 0.75, 0.2, 0.8))
+	ci.draw_rect(Rect2(-22, -8, 44, 2), METAL_ESCURO)
+
+
+static func _tela_parede(ci: CanvasItem, t: float) -> void:
+	caixa(ci, Rect2(-22, -34, 44, 26), Color("1e2228"))
+	ci.draw_rect(Rect2(-20, -32, 40, 22), Color("16304a"))
+	# gráfico subindo
+	var pts := PackedVector2Array()
+	for i in 9:
+		pts.append(Vector2(-18 + i * 4.5, -14 - i * 1.6 - sin(t * 2.0 + i) * 1.5))
+	ci.draw_polyline(pts, Color("5aff8a"), 1.0)
+	for i in 4:
+		ci.draw_rect(Rect2(-18 + i * 5, -30, 3, 2), Color("4ad0ff"))
+
+
+static func _janela_moderna(ci: CanvasItem) -> void:
+	caixa(ci, Rect2(-18, -42, 36, 36), METAL)
+	ci.draw_rect(Rect2(-16, -40, 32, 32), Color("a8d8f0"))
+	ci.draw_rect(Rect2(-16, -16, 32, 8), Color("8ac08a"))
+	elipse(ci, Vector2(8, -32), 4, 4, Color("fff4c0"))
+	ci.draw_rect(Rect2(-1, -40, 2, 32), METAL)
+	ci.draw_line(Vector2(-13, -37), Vector2(-6, -30), Color(1, 1, 1, 0.6))
+	ci.draw_rect(Rect2(-20, -7, 40, 2), BRANCO)

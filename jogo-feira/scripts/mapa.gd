@@ -59,6 +59,7 @@ func montar() -> void:
 		objeto.logico = centro(item[1])
 		objeto.position = iso(objeto.logico)
 		objeto.sala = chao[item[1]]
+		objeto.antigo = Dados.SALAS[objeto.sala].get("antigo", false)
 		add_child(objeto)
 		objetos.append(objeto)
 		por_sala.append([objeto, objeto.sala])
@@ -126,6 +127,7 @@ func _criar_paredes() -> void:
 			if dona == "":
 				dona = _sala_vizinha(c)
 			parede.papel = Dados.SALAS[dona]["papel"]
+			parede.antiga = Dados.SALAS[dona].get("antigo", false)
 			por_sala.append([parede, dona])
 			parede.position = iso(centro(c))
 			add_child(parede)
@@ -176,9 +178,20 @@ func _criar_movel(tipo: String, celula: Vector2i) -> void:
 func _desenhar_piso() -> void:
 	for c: Vector2i in chao:
 		var id: String = chao[c]
-		var madeira: Color = Dados.SALAS[id if id != "" else "laboratorio"]["madeira"]
+		var dados_sala: Dictionary = Dados.SALAS[id if id != "" else _sala_vizinha(c)]
+		var madeira: Color = dados_sala["madeira"]
 		var x0 := c.x * CELULA
 		var y0 := c.y * CELULA
+		if not dados_sala.get("antigo", false):
+			# piso moderno: azulejos grandes e lisos, com rejunte fininho
+			var piso := madeira.lightened(0.04) if (c.x + c.y) % 2 == 0 else madeira
+			if id == "":
+				piso = piso.darkened(0.08)
+			_quad(Vector2(x0, y0), Vector2(x0 + CELULA, y0), Vector2(x0 + CELULA, y0 + CELULA), Vector2(x0, y0 + CELULA), piso)
+			piso_linha(Vector2(x0, y0), Vector2(x0 + CELULA, y0), madeira.darkened(0.12))
+			piso_linha(Vector2(x0, y0), Vector2(x0, y0 + CELULA), madeira.darkened(0.12))
+			piso_linha(Vector2(x0 + 2, y0 + 3), Vector2(x0 + 6, y0 + 3), Color(1, 1, 1, 0.35))
+			continue
 		# 4 tábuas por célula, que continuam pelas células vizinhas
 		for i in 4:
 			var ty := y0 + i * 4.0
@@ -216,6 +229,10 @@ func _desenhar_piso() -> void:
 		_quad(r.position, Vector2(r.end.x, r.position.y), r.end, Vector2(r.position.x, r.end.y), tapete)
 		_contorno(r, Desenhos.CONTORNO)
 		_contorno(r.grow(-4), tapete.lightened(0.3))
+
+
+func piso_linha(a: Vector2, b: Vector2, cor: Color) -> void:
+	piso.draw_line(iso(a), iso(b), cor)
 
 
 func _ruido(a: int, b: int) -> float:

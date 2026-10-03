@@ -136,4 +136,4 @@ Tudo fica em `scripts/dados.gd`: os textos, as cores, as salas e onde cada objet
 - `scripts/fala.gd`: a caixinha de fala do coelho
 - `scripts/quiz.gd`: o quiz do final
 - `scripts/desenhos.gd`: os desenhos provisórios (as cores do coelho ficam no começo da parte do coelho)
-- `scripts/movel.gd`: os móveis de decoração (estantes, bancadas, velas...)
+- `scripts/movel.gd`: os móveis de decoração (antigos no Museu, modernos no resto)

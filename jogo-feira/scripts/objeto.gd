@@ -13,6 +13,7 @@ var visto := false
 var tempo := 0.0
 var marcador: Node2D
 var sala := ""
+var antigo := false  # no museu o pedestal é de madeira; nas outras salas, branco
 
 
 func configurar(id_objeto: String) -> void:
@@ -44,10 +45,16 @@ func _process(delta: float) -> void:
 
 func _draw() -> void:
 	Desenhos.elipse(self, Vector2(2, 0), 14, 4.5, Desenhos.SOMBRA)
-	# pedestal de madeira
-	Desenhos.caixa(self, Rect2(-9, -9, 18, 9), Desenhos.MADEIRA_ESCURA)
-	draw_rect(Rect2(-7, -7, 14, 1), Desenhos.MADEIRA)
-	Desenhos.caixa(self, Rect2(-11, -12, 22, 3), Desenhos.MADEIRA.lightened(0.15))
+	if antigo:
+		# pedestal de madeira
+		Desenhos.caixa(self, Rect2(-9, -9, 18, 9), Desenhos.MADEIRA_ESCURA)
+		draw_rect(Rect2(-7, -7, 14, 1), Desenhos.MADEIRA)
+		Desenhos.caixa(self, Rect2(-11, -12, 22, 3), Desenhos.MADEIRA.lightened(0.15))
+	else:
+		# pedestal moderno, branco com faixa colorida
+		Desenhos.caixa(self, Rect2(-9, -9, 18, 9), Desenhos.BRANCO.darkened(0.08))
+		draw_rect(Rect2(-9, -4, 18, 1), cor)
+		Desenhos.caixa(self, Rect2(-11, -12, 22, 3), Desenhos.BRANCO)
 
 	var y := -27.0 + sin(tempo * 2.0) * 1.5
 	if destacado:

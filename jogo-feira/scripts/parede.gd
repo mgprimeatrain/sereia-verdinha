@@ -13,6 +13,7 @@ var alta := true
 var face_sul := true
 var face_leste := true
 var papel := Color("3a2a1e")
+var antiga := false  # museu: papel de parede e rodapé de madeira; senão, parede lisa moderna
 
 
 func _ready() -> void:
@@ -40,7 +41,7 @@ func _draw() -> void:
 		_face(d, c, h, papel)
 	if face_leste:
 		_face(c, b, h, papel.darkened(0.12))
-	var topo := papel.darkened(0.35) if alta else Desenhos.MADEIRA
+	var topo := papel.darkened(0.35) if alta else (Desenhos.MADEIRA if antiga else Desenhos.METAL)
 	draw_colored_polygon(PackedVector2Array([a + h, b + h, c + h, d + h]), topo)
 	# contorno preto grosso, como o do coelho
 	if face_sul:
@@ -57,7 +58,15 @@ func _draw() -> void:
 func _face(p1: Vector2, p2: Vector2, h: Vector2, cor: Color) -> void:
 	draw_colored_polygon(PackedVector2Array([p1, p2, p2 + h, p1 + h]), cor)
 	if not alta:
-		draw_colored_polygon(PackedVector2Array([p1, p2, p2 + h, p1 + h]), Desenhos.MADEIRA_ESCURA)
+		draw_colored_polygon(PackedVector2Array([p1, p2, p2 + h, p1 + h]), Desenhos.MADEIRA_ESCURA if antiga else Desenhos.METAL_ESCURO)
+		return
+	if not antiga:
+		# parede moderna: lisa, rodapé cinza e uma faixa colorida
+		var rodape_m := Vector2(0, -5)
+		draw_colored_polygon(PackedVector2Array([p1, p2, p2 + rodape_m, p1 + rodape_m]), Desenhos.METAL)
+		draw_line(p1 + rodape_m, p2 + rodape_m, Desenhos.CONTORNO, 1.0)
+		var faixa_m := Vector2(0, -20)
+		draw_colored_polygon(PackedVector2Array([p1 + faixa_m, p2 + faixa_m, p2 + faixa_m + Vector2(0, -2), p1 + faixa_m + Vector2(0, -2)]), cor.darkened(0.15))
 		return
 	# bolinhas do papel de parede
 	for t in [0.25, 0.75]:

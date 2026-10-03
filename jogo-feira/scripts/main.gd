@@ -179,7 +179,7 @@ func _mostrar_sala(id: String) -> void:
 	# a sala atual (com as paredes do fundo) fica visível; o resto some no escuro
 	var area: Rect2i = Dados.SALAS[id]["area"]
 	var r := Rect2(Vector2(area.position - Vector2i(3, 3)), Vector2(area.size + Vector2i(4, 4)))
-	mapa.escuridao.definir_sala(Rect2(r.position * Mapa.CELULA, r.size * Mapa.CELULA))
+	mapa.escuridao.definir_sala(Rect2(r.position * Mapa.CELULA, r.size * Mapa.CELULA), Dados.SALAS[id].get("escuro", 0.08))
 	mapa.mostrar_sala(id)
 
 

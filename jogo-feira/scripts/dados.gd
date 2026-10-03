@@ -2,6 +2,10 @@ class_name Dados
 extends RefCounted
 ## Todo o conteúdo do jogo fica aqui: o mapa, as salas e os componentes.
 ##
+## Salas com "antigo": true têm chão de madeira, papel de parede e móveis antigos
+## (o Museu); as outras são modernas, com piso claro. "escuro" (0 a 1) diz o quanto
+## a sala fica no escuro (só as luzes iluminam).
+##
 ## O mapa é uma grade de células (cada célula é um quadradinho do chão).
 ## As posições abaixo são em células: Vector2i(coluna, linha).
 ## Na tela, a grade aparece inclinada (na diagonal).
@@ -18,37 +22,38 @@ const SALAS := {
 	"laboratorio": {
 		"fala": "Olá! Eu sou o Coelho Cientista! Vamos descobrir de que são feitos os celulares e computadores que a gente usa todo dia. Visite as salas, inspecione os objetos com E e, no fim, faça o quiz no terminal aqui do laboratório!",
 		"nome": "Laboratório do Coelho", "area": Rect2i(14, 14, 12, 10),
-		"papel": Color("f2efe9"), "madeira": Color("cdb8a2"), "tapete": Color("e0664f"),
+		"papel": Color("eef0f2"), "madeira": Color("d6d9dd"), "tapete": Color("e0664f"),
 	},
 	"energia": {
 		"fala": "Aqui é a sala da energia! O lítio trocou as baterias grandes e pesadas por baterias leves e que duram muito.",
 		"nome": "Sala da Energia", "area": Rect2i(2, 14, 10, 10),
-		"papel": Color("f4ecc8"), "madeira": Color("c8b49e"), "tapete": Color("f0a830"),
+		"papel": Color("f6f0dc"), "madeira": Color("d8d6cf"), "tapete": Color("f0a830"),
 	},
 	"telas": {
 		"fala": "Materiais especiais deixaram as telas melhores, mais finas e muito mais resistentes. Vamos ver como elas funcionam!",
 		"nome": "Sala das Telas", "area": Rect2i(28, 14, 10, 10),
-		"papel": Color("e4def2"), "madeira": Color("c4b4a6"), "tapete": Color("9c6fd6"),
+		"papel": Color("ebe6f4"), "madeira": Color("d6d4dc"), "tapete": Color("9c6fd6"),
 	},
 	"processamento": {
 		"fala": "O silício é o \"cérebro\" dos chips: ele substituiu peças lentas e deixou os aparelhos rápidos e pequenos!",
 		"nome": "Sala do Processamento", "area": Rect2i(15, 2, 10, 10),
-		"papel": Color("d8f0e2"), "madeira": Color("c6b8a4"), "tapete": Color("4fbf7f"),
+		"papel": Color("e2f2e8"), "madeira": Color("d2d8d4"), "tapete": Color("4fbf7f"),
 	},
 	"museu": {
 		"fala": "No começo, os aparelhos usavam muito ferro, vidro grosso e plástico comum. Eram pesados, grandes e lentos! Olha só como era antigamente.",
 		"nome": "Museu da Tecnologia", "area": Rect2i(12, 26, 16, 8),
-		"papel": Color("f2dcd4"), "madeira": Color("bca690"), "tapete": Color("c8463c"),
+		"papel": Color("5a2a24"), "madeira": Color("6a4428"), "tapete": Color("6a1a18"),
+		"antigo": true, "escuro": 0.72,
 	},
 	"materiais": {
 		"nome": "Sala dos Materiais", "area": Rect2i(27, 2, 10, 10),
 		"fala": "A química transforma matérias-primas em peças de tecnologia. Cada material desta sala resolveu um problema dos aparelhos antigos!",
-		"papel": Color("f2e4d8"), "madeira": Color("c4b4a0"), "tapete": Color("d08a3a"),
+		"papel": Color("f4ebe4"), "madeira": Color("dcd6d0"), "tapete": Color("d08a3a"),
 	},
 	"lixo": {
 		"fala": "Fabricar um aparelho começa com a extração de minerais, e isso pode prejudicar a natureza. Por isso a reciclagem é tão importante: ela recupera os materiais para usar de novo!",
 		"nome": "Ferro-Velho Eletrônico", "area": Rect2i(29, 26, 10, 8),
-		"papel": Color("dcdcd8"), "madeira": Color("b0aca4"), "tapete": Color(0, 0, 0, 0),
+		"papel": Color("e4e6e0"), "madeira": Color("c4c6c0"), "tapete": Color(0, 0, 0, 0),
 	},
 }
 
@@ -75,38 +80,41 @@ const OBJETOS := [
 	["pilha_volta", Vector2i(14, 28)], ["valvula", Vector2i(17, 31)], ["tv_tubo", Vector2i(23, 31)], ["disquete", Vector2i(26, 28)],
 ]
 
-## Decoração. No chão: estante, bancada, armario, caixas, mesa_vela, lampiao,
-## cabos, barril, sucata. Na parede (use a célula da parede): quadro, janela, tabela.
+## Decoração.
+## Antigos (Museu): estante, bancada, armario, mesa_vela, lampiao; na parede: quadro, janela.
+## Modernos: estante_metal, bancada_moderna, armario_branco, luminaria, planta,
+## servidor, lixeiras; na parede: lousa, tela_parede, janela_moderna.
+## Em qualquer sala: caixas, cabos, barril, sucata; na parede: tabela.
 const MOVEIS := [
 	# laboratório
-	["estante", Vector2i(14, 14)], ["bancada", Vector2i(23, 14)], ["armario", Vector2i(25, 15)],
-	["mesa_vela", Vector2i(15, 22)], ["caixas", Vector2i(24, 22)], ["cabos", Vector2i(22, 19)],
-	["quadro", Vector2i(16, 13)], ["tabela", Vector2i(22, 13)], ["janela", Vector2i(13, 16)],
+	["estante_metal", Vector2i(14, 14)], ["bancada_moderna", Vector2i(23, 14)], ["armario_branco", Vector2i(25, 15)],
+	["planta", Vector2i(15, 22)], ["luminaria", Vector2i(24, 22)], ["planta", Vector2i(25, 21)],
+	["lousa", Vector2i(16, 13)], ["tabela", Vector2i(22, 13)], ["janela_moderna", Vector2i(13, 16)],
 	# energia
-	["estante", Vector2i(2, 14)], ["bancada", Vector2i(6, 14)], ["lampiao", Vector2i(10, 14)],
-	["mesa_vela", Vector2i(3, 22)], ["caixas", Vector2i(10, 22)], ["cabos", Vector2i(6, 18)],
-	["janela", Vector2i(4, 13)], ["tabela", Vector2i(8, 13)], ["quadro", Vector2i(1, 19)],
+	["estante_metal", Vector2i(2, 14)], ["bancada_moderna", Vector2i(6, 14)], ["luminaria", Vector2i(10, 14)],
+	["planta", Vector2i(3, 22)], ["caixas", Vector2i(10, 22)], ["cabos", Vector2i(6, 18)],
+	["janela_moderna", Vector2i(4, 13)], ["tabela", Vector2i(8, 13)], ["tela_parede", Vector2i(1, 19)],
 	# telas
-	["estante", Vector2i(28, 14)], ["armario", Vector2i(33, 14)], ["bancada", Vector2i(36, 14)],
-	["caixas", Vector2i(37, 22)], ["lampiao", Vector2i(36, 20)], ["cabos", Vector2i(34, 19)],
-	["quadro", Vector2i(30, 13)], ["janela", Vector2i(27, 16)],
+	["estante_metal", Vector2i(28, 14)], ["armario_branco", Vector2i(33, 14)], ["bancada_moderna", Vector2i(36, 14)],
+	["caixas", Vector2i(37, 22)], ["luminaria", Vector2i(36, 20)], ["planta", Vector2i(28, 22)],
+	["tela_parede", Vector2i(30, 13)], ["janela_moderna", Vector2i(27, 16)],
 	# processamento
-	["bancada", Vector2i(16, 2)], ["estante", Vector2i(20, 2)], ["bancada", Vector2i(23, 2)],
-	["caixas", Vector2i(23, 10)], ["mesa_vela", Vector2i(15, 10)], ["cabos", Vector2i(21, 8)],
-	["tabela", Vector2i(18, 1)], ["quadro", Vector2i(22, 1)], ["janela", Vector2i(14, 6)],
+	["bancada_moderna", Vector2i(16, 2)], ["servidor", Vector2i(20, 2)], ["servidor", Vector2i(21, 2)], ["bancada_moderna", Vector2i(23, 2)],
+	["caixas", Vector2i(23, 10)], ["planta", Vector2i(15, 10)], ["cabos", Vector2i(21, 8)],
+	["tabela", Vector2i(18, 1)], ["tela_parede", Vector2i(22, 1)], ["janela_moderna", Vector2i(14, 6)],
 	# museu
 	["estante", Vector2i(12, 26)], ["armario", Vector2i(16, 26)], ["armario", Vector2i(23, 26)],
 	["estante", Vector2i(27, 26)], ["mesa_vela", Vector2i(20, 30)], ["lampiao", Vector2i(12, 32)],
-	["caixas", Vector2i(27, 32)], ["quadro", Vector2i(14, 25)], ["janela", Vector2i(24, 25)],
+	["mesa_vela", Vector2i(27, 32)], ["mesa_vela", Vector2i(12, 29)], ["quadro", Vector2i(14, 25)], ["janela", Vector2i(24, 25)],
 	["tabela", Vector2i(11, 29)],
 	# materiais
-	["estante", Vector2i(27, 2)], ["bancada", Vector2i(31, 2)], ["armario", Vector2i(36, 3)],
-	["mesa_vela", Vector2i(36, 10)], ["caixas", Vector2i(28, 11)], ["cabos", Vector2i(31, 10)],
-	["tabela", Vector2i(29, 1)], ["quadro", Vector2i(34, 1)],
+	["estante_metal", Vector2i(27, 2)], ["bancada_moderna", Vector2i(31, 2)], ["armario_branco", Vector2i(36, 3)],
+	["planta", Vector2i(36, 10)], ["caixas", Vector2i(28, 11)], ["luminaria", Vector2i(31, 11)],
+	["tabela", Vector2i(29, 1)], ["lousa", Vector2i(34, 1)],
 	# lixo eletrônico
-	["barril", Vector2i(29, 26)], ["sucata", Vector2i(35, 26)], ["lampiao", Vector2i(31, 26)],
+	["barril", Vector2i(29, 26)], ["sucata", Vector2i(35, 26)], ["luminaria", Vector2i(31, 26)], ["lixeiras", Vector2i(29, 30)],
 	["sucata", Vector2i(38, 30)], ["barril", Vector2i(38, 33)], ["barril", Vector2i(37, 33)],
-	["caixas", Vector2i(29, 32)], ["cabos", Vector2i(34, 29)], ["janela", Vector2i(37, 25)],
+	["caixas", Vector2i(29, 32)], ["cabos", Vector2i(34, 29)], ["janela_moderna", Vector2i(37, 25)],
 ]
 
 ## "forma" escolhe o desenho provisório (veja desenhos.gd).
