@@ -355,8 +355,8 @@ static func _aviso(ci: CanvasItem, cor: Color) -> void:
 
 # ---------------------------------------------------------------- móveis
 
-const MADEIRA := Color("b8743e")
-const MADEIRA_ESCURA := Color("8a5228")
+const MADEIRA := Color("a8805e")
+const MADEIRA_ESCURA := Color("7a5a42")
 
 
 static func largura_movel(tipo: String) -> float:

@@ -166,7 +166,7 @@ func _criar_movel(tipo: String, celula: Vector2i) -> void:
 	var luz := Desenhos.luz_movel(tipo)
 	if luz != Vector3.ZERO:
 		escuridao.adicionar_luz(movel.position + Vector2(0, luz.x), luz.y, luz.z)
-		var brilho := Escuridao.brilho(Color(1.0, 0.6, 0.25), luz.y * 0.7, 0.18)
+		var brilho := Escuridao.brilho(Color(1.0, 0.8, 0.6), luz.y * 0.5, 0.08)
 		brilho.position = Vector2(0, luz.x)
 		movel.add_child(brilho)
 

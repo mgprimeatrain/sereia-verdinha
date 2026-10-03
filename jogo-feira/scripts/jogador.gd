@@ -52,10 +52,6 @@ func _ready() -> void:
 	camera.position_smoothing_speed = 3.5
 	add_child(camera)
 
-	var brilho := Escuridao.brilho(Color(1.0, 0.65, 0.35), 70, 0.12)
-	brilho.position = Vector2(0, -14)
-	add_child(brilho)
-
 	pulo = -1.0
 	_carregar_sprites()
 

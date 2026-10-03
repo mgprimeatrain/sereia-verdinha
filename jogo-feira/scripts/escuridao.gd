@@ -10,7 +10,7 @@ uniform float raio_jogador = 110.0;
 uniform vec4 luzes[64];
 uniform int total_luzes = 0;
 uniform float escuridao = 0.12;
-uniform vec3 tom : source_color = vec3(0.1, 0.06, 0.08);
+uniform vec3 tom : source_color = vec3(0.08, 0.08, 0.1);
 uniform vec4 sala = vec4(-99999.0, -99999.0, 99999.0, 99999.0);
 varying vec2 pos;
 void vertex() { pos = VERTEX; }

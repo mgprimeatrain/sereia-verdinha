@@ -14,7 +14,7 @@ void fragment() {
 	uv.x *= 1.25;
 	float v = smoothstep(0.28, 0.75, length(uv));
 	float grao = ruido(floor(UV * vec2(480.0, 270.0)) + vec2(floor(TIME * 12.0) * 3.1)) * 0.02;
-	COLOR = vec4(0.02, 0.01, 0.0, v * forca + grao);
+	COLOR = vec4(0.0, 0.0, 0.02, v * forca + grao);
 }
 """
 
