@@ -50,6 +50,18 @@ func _ready() -> void:
 		foto.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		foto.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 		moldura.add_child(foto)
+	elif Recorte.retrato():
+		# só a cabeça do coelho (parte de cima do sprite)
+		var foto_inteira := Recorte.retrato()
+		var cabeca := AtlasTexture.new()
+		cabeca.atlas = foto_inteira
+		var tam := foto_inteira.get_size()
+		cabeca.region = Rect2(0, tam.y * 0.08, tam.x, tam.y * 0.55)
+		var foto := TextureRect.new()
+		foto.texture = cabeca
+		foto.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		foto.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		moldura.add_child(foto)
 	else:
 		var desenho := TelaDesenho.new()
 		desenho.forma = "coelho"

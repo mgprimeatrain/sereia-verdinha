@@ -235,12 +235,26 @@ func _criar_titulo() -> void:
 	fundo.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	titulo.add_child(fundo)
 
-	var luz := TelaDesenho.new()
-	luz.forma = "coelho"
-	luz.escala = 2.4
-	luz.deslocamento = Vector2(0, 62)
-	luz.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	titulo.add_child(luz)
+	var foto := Recorte.retrato()
+	if foto:
+		var coelho := TextureRect.new()
+		coelho.texture = foto
+		coelho.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		coelho.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		coelho.anchor_left = 0.5
+		coelho.anchor_right = 0.5
+		coelho.offset_left = -60
+		coelho.offset_right = 60
+		coelho.offset_top = 76
+		coelho.offset_bottom = 198
+		titulo.add_child(coelho)
+	else:
+		var luz := TelaDesenho.new()
+		luz.forma = "coelho"
+		luz.escala = 2.4
+		luz.deslocamento = Vector2(0, 62)
+		luz.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		titulo.add_child(luz)
 
 	_linha("COELHO CIENTISTA", 26, Color("f0c070"), 18, titulo)
 	_linha("e a Química na Tecnologia", 11, Color("c8a888"), 54, titulo)

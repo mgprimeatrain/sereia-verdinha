@@ -8,6 +8,41 @@ extends RefCounted
 
 const MEDIDA := 64.0  # altura usada só para medir o coelho
 
+static var _retrato: Texture2D
+
+
+## O 1º quadro do coelho parado de frente, em tamanho grande e recortado
+## (usado na tela de título e na caixa de fala). null se não tiver sprite.
+static func retrato() -> Texture2D:
+	if _retrato:
+		return _retrato
+	var pasta := DirAccess.open("res://arte/")
+	if pasta == null:
+		return null
+	var melhor := ""
+	var pontos := -1
+	for arquivo in pasta.get_files():
+		var nome := arquivo.trim_suffix(".import").trim_suffix(".remap")
+		if not nome.ends_with(".png") or not nome.begins_with("coelho_") or nome.begins_with("coelho_rosto"):
+			continue
+		var p := (2 if "frente" in nome else 0) + (1 if "parado" in nome else 0)
+		if p > pontos:
+			pontos = p
+			melhor = nome
+	if melhor == "":
+		return null
+	var img: Image = (load("res://arte/" + melhor) as Texture2D).get_image()
+	if img.is_compressed():
+		img.decompress()
+	var ultima := melhor.get_basename().get_slice("_", melhor.get_basename().get_slice_count("_") - 1)
+	var grade := Vector2i(1, 1)
+	if ultima.contains("x") and ultima.get_slice("x", 0).is_valid_int():
+		grade = Vector2i(ultima.get_slice("x", 0).to_int(), ultima.get_slice("x", 1).to_int())
+	var quadro := img.get_region(Rect2i(Vector2i.ZERO, Vector2i(img.get_width() / grade.x, img.get_height() / grade.y)))
+	quadro = quadro.get_region(quadro.get_used_rect())
+	_retrato = ImageTexture.create_from_image(quadro)
+	return _retrato
+
 
 ## Devolve {"quadros": Array[Texture2D], "altura": altura do quadro final}.
 static func preparar(folha: Texture2D, grade: Vector2i, altura_coelho: float) -> Dictionary:
@@ -53,6 +88,7 @@ static func _cortar(img: Image, grade: Vector2i, tam: Vector2i, escala: float) -
 			var quadro := img.get_region(Rect2i(Vector2i(coluna, linha) * tam, tam))
 			quadro.resize(novo.x, novo.y, Image.INTERPOLATE_NEAREST)
 			_apagar_fundo(quadro)
+			_limpar_bordas(quadro)
 			var caixa := quadro.get_used_rect()
 			cortes.append({"imagem": quadro, "caixa": caixa, "centro": _centro_da_cabeca(quadro, caixa)})
 	return cortes
@@ -68,9 +104,13 @@ static func _eh_fundo(c: Color) -> bool:
 
 ## Pinta de transparente o branco ligado às bordas do quadro (o fundo).
 ## O branco de dentro do coelho fica, porque o contorno preto segura.
+## Se a imagem já tem fundo transparente, não mexe em nada.
 static func _apagar_fundo(img: Image) -> void:
 	var w := img.get_width()
 	var h := img.get_height()
+	for canto in [Vector2i(0, 0), Vector2i(w - 1, 0), Vector2i(0, h - 1), Vector2i(w - 1, h - 1)]:
+		if img.get_pixelv(canto).a < 0.1:
+			return
 	var visitado := PackedByteArray()
 	visitado.resize(w * h)
 	var pilha := PackedInt32Array()
@@ -96,6 +136,19 @@ static func _apagar_fundo(img: Image) -> void:
 		if x < w - 1: pilha.append(i + 1)
 		if y > 0: pilha.append(i - w)
 		if y < h - 1: pilha.append(i + w)
+
+
+## Deixa cada pixel ou totalmente visível ou totalmente transparente
+## (tira o "fantasminha" em volta do contorno, para ficar pixel art nítida).
+static func _limpar_bordas(img: Image) -> void:
+	for y in img.get_height():
+		for x in img.get_width():
+			var c := img.get_pixel(x, y)
+			if c.a < 0.5:
+				img.set_pixel(x, y, Color(0, 0, 0, 0))
+			elif c.a < 1.0:
+				c.a = 1.0
+				img.set_pixel(x, y, c)
 
 
 ## Meio da cabeça (parte de cima do coelho), que quase não mexe ao andar.

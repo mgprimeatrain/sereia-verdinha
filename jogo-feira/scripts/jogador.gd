@@ -40,6 +40,9 @@ var passo := 0.0
 var correndo := false
 var pulo := 0.0  # tempo desde o começo do pulo (< 0 = no chão)
 var camera: Camera2D
+var olhar_atual := Vector2.ZERO  # a câmera olha um pouco para onde o coelho anda
+var camera_real := Vector2.ZERO  # posição da câmera sem arredondar
+var fracao := Vector2.ZERO  # pedacinho de pixel que a tela compensa (ver main.gd)
 var sprite: AnimatedSprite2D
 var alturas := {}  # animação -> altura do quadro (para ajustar o tamanho)
 
@@ -47,11 +50,10 @@ var alturas := {}  # animação -> altura do quadro (para ajustar o tamanho)
 func _ready() -> void:
 	# Câmera estilo Enigma do Medo: segue solta, com atraso,
 	# e olha um pouco para onde o coelho está andando.
+	# A câmera anda em pixels inteiros (junto com o mundo) e o pedacinho que sobra
+	# é compensado movendo a tela inteira (main.gd): assim nada treme.
 	camera = Camera2D.new()
-	camera.position = Vector2(0, -14)
-	camera.position_smoothing_enabled = true
-	camera.position_smoothing_speed = 3.5
-	camera.process_mode = Node.PROCESS_MODE_ALWAYS  # continua certa com o jogo pausado
+	camera.top_level = true
 	add_child(camera)
 
 	pulo = -1.0
@@ -113,6 +115,7 @@ func _carregar_sprites() -> void:
 	sprite.sprite_frames = quadros
 	sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	add_child(sprite)
+	_animar(0.0)  # já começa com a animação certa (parado, de frente)
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -120,7 +123,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		pulo = 0.0
 
 
-func _physics_process(delta: float) -> void:
+func _process(delta: float) -> void:
 	var entrada := Input.get_vector("esquerda", "direita", "cima", "baixo")
 	andando = entrada != Vector2.ZERO
 	correndo = andando and Input.is_action_pressed("correr")
@@ -138,10 +141,8 @@ func _physics_process(delta: float) -> void:
 			logico = tentativa
 	else:
 		passo = 0.0
-	position = Mapa.iso(logico)
-
-	var olhar := entrada * Vector2(20, 12)
-	camera.offset = camera.offset.lerp(olhar, delta * 1.5)
+	position = Mapa.iso(logico).round()
+	olhar_atual = olhar_atual.lerp(entrada * Vector2(20, 12), 1.0 - exp(-delta * 1.5))
 
 	# pulo: um arco de 0,5 segundo
 	var altura_pulo := 0.0
@@ -215,8 +216,21 @@ func _animar(altura_pulo: float) -> void:
 
 func posicionar(p: Vector2) -> void:
 	logico = p
-	position = Mapa.iso(logico)
-	camera.reset_smoothing()
+	position = Mapa.iso(logico).round()
+	camera_real = _alvo_da_camera()
+	atualizar_camera(0.0)
+
+
+func _alvo_da_camera() -> Vector2:
+	return position + Vector2(0, -14) + olhar_atual
+
+
+## Chamada pelo main.gd a cada quadro (mesmo com o jogo pausado).
+func atualizar_camera(delta: float) -> void:
+	camera_real = camera_real.lerp(_alvo_da_camera(), 1.0 - exp(-delta * 3.5))
+	var inteiro := camera_real.floor()
+	camera.global_position = inteiro
+	fracao = camera_real - inteiro
 
 
 func _draw() -> void:

@@ -17,6 +17,7 @@ const CONTROLES := {
 }
 
 var mundo: Node2D
+var tela: SubViewportContainer
 var mapa: Mapa
 var jogador: Jogador
 var sala_atual := ""
@@ -36,15 +37,17 @@ func _ready() -> void:
 
 	# O mundo é desenhado em baixa resolução (240x135) e ampliado 8x em Full HD,
 	# por isso fica com pixels grandes, iguais aos do coelho.
+	# A imagem tem 1 pixel a mais de cada lado: a tela inteira desliza um
+	# pedacinho de pixel para a câmera andar lisinha, sem tremer.
 	# A interface fica nítida por cima.
 	RenderingServer.set_default_clear_color(Color("14121a"))
-	var tela := SubViewportContainer.new()
+	tela = SubViewportContainer.new()
 	tela.process_mode = Node.PROCESS_MODE_PAUSABLE
 	tela.scale = Vector2(2, 2)
 	add_child(tela)
 	var viewport := SubViewport.new()
-	viewport.size = Vector2i(240, 135)
-	tela.size = Vector2(240, 135)
+	viewport.size = Vector2i(242, 137)
+	tela.size = Vector2(242, 137)
 	viewport.snap_2d_transforms_to_pixel = true
 	viewport.canvas_item_default_texture_filter = Viewport.DEFAULT_CANVAS_ITEM_TEXTURE_FILTER_NEAREST
 	tela.add_child(viewport)
@@ -113,7 +116,9 @@ func _input(event: InputEvent) -> void:
 					ui.mostrar_aviso("Você acertou %d de %d no quiz!" % [ui.quiz.acertos, Dados.QUIZ.size()], 4.0)
 
 
-func _process(_delta: float) -> void:
+func _process(delta: float) -> void:
+	jogador.atualizar_camera(delta)
+	tela.position = -(Vector2.ONE + jogador.fracao) * tela.scale
 	if estado != "jogando":
 		return
 	_atualizar_sala()
@@ -149,10 +154,10 @@ func _atualizar_sala() -> void:
 		return
 	estado = "trocando_sala"
 	ui.mostrar_dica("")
-	jogador.set_physics_process(false)
+	jogador.set_process(false)
 	await ui.fade(true)
 	_mostrar_sala(id)
-	jogador.set_physics_process(true)
+	jogador.set_process(true)
 	await ui.fade(false)
 	estado = "jogando"
 	_falar_da_sala(id)

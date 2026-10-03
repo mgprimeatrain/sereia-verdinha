@@ -18,7 +18,7 @@ de um laboratório e inspeciona componentes eletrônicos, aprendendo a química 
 | Shift (segurando) | Correr |
 | Espaço | Pular |
 | E ou Enter | Inspecionar / fechar a janela |
-| F11 | Tela cheia |
+| F11 | Liga/desliga a tela cheia (o jogo já abre em tela cheia) |
 | F2 | Recomeçar do zero (para o próximo visitante da feira) |
 
 ## O mapa
