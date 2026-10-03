@@ -25,8 +25,27 @@ de um laboratório e inspeciona componentes eletrônicos, aprendendo a química 
 
 É um prédio só, visto na diagonal. O **Laboratório** fica no meio e tem
 passagens para a **Energia** (esquerda), **Telas** (direita, e de lá para o
-**Lixo Eletrônico**), **Processamento** (cima) e **Museu** (baixo).
-O mapa, os móveis e os objetos ficam em `scripts/dados.gd`.
+**Lixo Eletrônico**), **Processamento** (cima, e de lá para a **Sala dos
+Materiais**) e **Museu** (baixo).
+
+Na primeira vez em cada sala, o coelho explica o tema dela (frases do roteiro
+da apresentação). No Laboratório tem o **Terminal do Quiz**, com as perguntas
+do final da apresentação.
+
+O mapa, os móveis, os objetos, as falas e as perguntas do quiz ficam em
+`scripts/dados.gd`.
+
+## O que cada sala mostra (roteiro da apresentação)
+
+| Sala | Parte da apresentação | Objetos |
+|---|---|---|
+| Museu | Evolução dos materiais | pilha de Volta, válvula, TV de tubo, disquete, celular tijolão, computador antigo |
+| Sala dos Materiais | Materiais e química | fio de cobre, conector de ouro, notebook de alumínio e magnésio, vidro da tela, plástico |
+| Energia | Lítio | pilha alcalina, bateria de lítio, painel solar |
+| Processamento | Silício | wafer, transistor, processador |
+| Telas | Materiais especiais | LCD, OLED, tela touch |
+| Lixo Eletrônico | Fabricação e impactos | minério (bauxita), placa velha, bateria estufada, pilhas usadas |
+| Laboratório | Finalização e jogo | Terminal do Quiz |
 
 ## Sprites do coelho
 
@@ -61,6 +80,9 @@ tremer) e deixa o coelho sempre do mesmo tamanho. Para mudar o tamanho do
 coelho, mude `ALTURA_COELHO` no começo de `scripts/jogador.gd`.
 Sem nenhuma imagem, o jogo usa o coelho desenhado por código.
 
+**Rostinho do coelho:** coloque `arte/coelho_rosto.png` e ele aparece na caixa
+de fala.
+
 ## Imagens dos componentes
 
 O jogo funciona sem imagens, usando desenhos provisórios. Para trocar,
@@ -85,6 +107,15 @@ coloque um **PNG com fundo transparente** com o nome certo:
 | `arte/componentes/tv_tubo.png` | TV de tubo |
 | `arte/componentes/disquete.png` | Disquete |
 | `arte/componentes/boas_vindas.png` | Placa de boas-vindas |
+| `arte/componentes/fio_cobre.png` | Fio de cobre |
+| `arte/componentes/contato_ouro.png` | Conector banhado a ouro |
+| `arte/componentes/carcaca_aluminio.png` | Notebook de alumínio |
+| `arte/componentes/vidro_tela.png` | Vidro da tela |
+| `arte/componentes/plastico.png` | Capinha de plástico |
+| `arte/componentes/tijolao.png` | Celular tijolão |
+| `arte/componentes/gabinete_ferro.png` | Computador antigo |
+| `arte/componentes/minerio.png` | Minério (bauxita) |
+| `arte/componentes/terminal_quiz.png` | Terminal do quiz |
 
 Depois de colocar os arquivos, volte para o Godot (ele importa sozinho) e aperte F5.
 
@@ -102,5 +133,7 @@ Tudo fica em `scripts/dados.gd`: os textos, as cores, as salas e onde cada objet
 - `scripts/objeto.gd`: os componentes que dá para inspecionar
 - `scripts/escuridao.gd`: a escuridão e a luz da lanterna
 - `scripts/interface.gd`: tela de título, HUD e janela de inspeção
+- `scripts/fala.gd`: a caixinha de fala do coelho
+- `scripts/quiz.gd`: o quiz do final
 - `scripts/desenhos.gd`: os desenhos provisórios (as cores do coelho ficam no começo da parte do coelho)
 - `scripts/movel.gd`: os móveis de decoração (estantes, bancadas, velas...)

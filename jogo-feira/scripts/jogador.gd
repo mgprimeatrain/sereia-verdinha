@@ -51,6 +51,7 @@ func _ready() -> void:
 	camera.position = Vector2(0, -14)
 	camera.position_smoothing_enabled = true
 	camera.position_smoothing_speed = 3.5
+	camera.process_mode = Node.PROCESS_MODE_ALWAYS  # continua certa com o jogo pausado
 	add_child(camera)
 
 	pulo = -1.0
@@ -66,7 +67,7 @@ func _carregar_sprites() -> void:
 	var vistos := {}
 	for arquivo in pasta.get_files():
 		var nome := arquivo.trim_suffix(".import").trim_suffix(".remap")
-		if not nome.ends_with(".png") or not nome.begins_with("coelho_") or vistos.has(nome):
+		if not nome.ends_with(".png") or not nome.begins_with("coelho_") or nome.begins_with("coelho_rosto") or vistos.has(nome):
 			continue
 		vistos[nome] = true
 		var partes := nome.get_basename().trim_prefix("coelho_").split("_")

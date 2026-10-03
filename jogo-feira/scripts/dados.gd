@@ -16,26 +16,37 @@ const INICIO := Vector2i(20, 21)
 ## Cada sala é um retângulo de chão: Rect2i(coluna, linha, largura, altura).
 const SALAS := {
 	"laboratorio": {
+		"fala": "Olá! Eu sou o Coelho Cientista! Vamos descobrir de que são feitos os celulares e computadores que a gente usa todo dia. Visite as salas, inspecione os objetos com E e, no fim, faça o quiz no terminal aqui do laboratório!",
 		"nome": "Laboratório do Coelho", "area": Rect2i(14, 14, 12, 10),
 		"papel": Color("f2efe9"), "madeira": Color("cdb8a2"), "tapete": Color("e0664f"),
 	},
 	"energia": {
+		"fala": "Aqui é a sala da energia! O lítio trocou as baterias grandes e pesadas por baterias leves e que duram muito.",
 		"nome": "Sala da Energia", "area": Rect2i(2, 14, 10, 10),
 		"papel": Color("f4ecc8"), "madeira": Color("c8b49e"), "tapete": Color("f0a830"),
 	},
 	"telas": {
+		"fala": "Materiais especiais deixaram as telas melhores, mais finas e muito mais resistentes. Vamos ver como elas funcionam!",
 		"nome": "Sala das Telas", "area": Rect2i(28, 14, 10, 10),
 		"papel": Color("e4def2"), "madeira": Color("c4b4a6"), "tapete": Color("9c6fd6"),
 	},
 	"processamento": {
+		"fala": "O silício é o \"cérebro\" dos chips: ele substituiu peças lentas e deixou os aparelhos rápidos e pequenos!",
 		"nome": "Sala do Processamento", "area": Rect2i(15, 2, 10, 10),
 		"papel": Color("d8f0e2"), "madeira": Color("c6b8a4"), "tapete": Color("4fbf7f"),
 	},
 	"museu": {
+		"fala": "No começo, os aparelhos usavam muito ferro, vidro grosso e plástico comum. Eram pesados, grandes e lentos! Olha só como era antigamente.",
 		"nome": "Museu da Tecnologia", "area": Rect2i(12, 26, 16, 8),
 		"papel": Color("f2dcd4"), "madeira": Color("bca690"), "tapete": Color("c8463c"),
 	},
+	"materiais": {
+		"nome": "Sala dos Materiais", "area": Rect2i(27, 2, 10, 10),
+		"fala": "A química transforma matérias-primas em peças de tecnologia. Cada material desta sala resolveu um problema dos aparelhos antigos!",
+		"papel": Color("f2e4d8"), "madeira": Color("c4b4a0"), "tapete": Color("d08a3a"),
+	},
 	"lixo": {
+		"fala": "Fabricar um aparelho começa com a extração de minerais, e isso pode prejudicar a natureza. Por isso a reciclagem é tão importante: ela recupera os materiais para usar de novo!",
 		"nome": "Ferro-Velho Eletrônico", "area": Rect2i(29, 26, 10, 8),
 		"papel": Color("dcdcd8"), "madeira": Color("b0aca4"), "tapete": Color(0, 0, 0, 0),
 	},
@@ -48,11 +59,15 @@ const PASSAGENS := [
 	Rect2i(19, 12, 2, 2),  # processamento - laboratório
 	Rect2i(19, 24, 2, 2),  # laboratório - museu
 	Rect2i(32, 24, 2, 2),  # telas - lixo
+	Rect2i(25, 6, 2, 2),  # processamento - materiais
 ]
 
 ## Componentes que dá para inspecionar.
 const OBJETOS := [
-	["boas_vindas", Vector2i(18, 17)],
+	["boas_vindas", Vector2i(18, 17)], ["terminal_quiz", Vector2i(22, 17)],
+	["fio_cobre", Vector2i(29, 5)], ["contato_ouro", Vector2i(34, 5)], ["plastico", Vector2i(32, 7)],
+	["carcaca_aluminio", Vector2i(29, 9)], ["vidro_tela", Vector2i(34, 9)],
+	["tijolao", Vector2i(21, 28)], ["gabinete_ferro", Vector2i(15, 32)], ["minerio", Vector2i(36, 31)],
 	["pilha_alcalina", Vector2i(4, 17)], ["bateria_litio", Vector2i(7, 20)], ["painel_solar", Vector2i(9, 16)],
 	["wafer", Vector2i(17, 5)], ["transistor", Vector2i(22, 5)], ["processador", Vector2i(17, 9)],
 	["tela_lcd", Vector2i(30, 16)], ["tela_oled", Vector2i(35, 16)], ["tela_touch", Vector2i(29, 21)],
@@ -84,6 +99,10 @@ const MOVEIS := [
 	["estante", Vector2i(27, 26)], ["mesa_vela", Vector2i(20, 30)], ["lampiao", Vector2i(12, 32)],
 	["caixas", Vector2i(27, 32)], ["quadro", Vector2i(14, 25)], ["janela", Vector2i(24, 25)],
 	["tabela", Vector2i(11, 29)],
+	# materiais
+	["estante", Vector2i(27, 2)], ["bancada", Vector2i(31, 2)], ["armario", Vector2i(36, 3)],
+	["mesa_vela", Vector2i(36, 10)], ["caixas", Vector2i(28, 11)], ["cabos", Vector2i(31, 10)],
+	["tabela", Vector2i(29, 1)], ["quadro", Vector2i(34, 1)],
 	# lixo eletrônico
 	["barril", Vector2i(29, 26)], ["sucata", Vector2i(35, 26)], ["lampiao", Vector2i(31, 26)],
 	["sucata", Vector2i(38, 30)], ["barril", Vector2i(38, 33)], ["barril", Vector2i(37, 33)],
@@ -103,6 +122,17 @@ const COMPONENTES := {
 		"conta": false,
 		"texto": "Olá! Eu sou o Coelho Cientista e este é o meu laboratório. Cada porta leva a uma sala cheia de aparelhos eletrônicos. Chegue perto deles e aperte E para descobrir a química escondida dentro de cada um!",
 		"curiosidade": "Tem {total} componentes espalhados pelas salas, inclusive no Museu, com aparelhos bem antigos. Será que você encontra todos?",
+	},
+
+	"terminal_quiz": {
+		"nome": "Terminal do Quiz",
+		"tipo": "quiz",
+		"forma": "terminal",
+		"cor": Color("7fe0ff"),
+		"destaque": "?",
+		"conta": false,
+		"texto": "",
+		"curiosidade": "",
 	},
 
 	# ---------- ENERGIA ----------
@@ -209,7 +239,74 @@ const COMPONENTES := {
 		"curiosidade": "No Brasil, a lei obriga quem vende pilhas e baterias a receber as usadas de volta para dar o destino certo.",
 	},
 
+	"minerio": {
+		"nome": "Minério (bauxita)",
+		"forma": "minerio",
+		"cor": Color("b0583a"),
+		"destaque": "Al",
+		"texto": "Para fabricar aparelhos, primeiro é preciso tirar minerais da natureza, como a bauxita, de onde vem o alumínio (Al). A mineração pode desmatar, poluir rios e gastar muita energia. Reaproveitar os metais dos aparelhos velhos ajuda a natureza.",
+		"curiosidade": "Reciclar alumínio gasta só cerca de 5% da energia que seria usada para fazer alumínio novo a partir do minério!",
+	},
+
+	# ---------- MATERIAIS ----------
+	"fio_cobre": {
+		"nome": "Fio de cobre",
+		"forma": "fio",
+		"cor": Color("d9824a"),
+		"destaque": "Cu",
+		"texto": "O cobre (Cu) conduz eletricidade muito bem. Ele está nos fios, nas trilhas das placas e até dentro dos chips, levando a corrente elétrica de um lugar para outro sem desperdiçar energia.",
+		"curiosidade": "Um celular tem uns 15 gramas de cobre. É um dos metais que aparecem em maior quantidade dentro dele!",
+	},
+	"contato_ouro": {
+		"nome": "Conector banhado a ouro",
+		"forma": "conector",
+		"cor": Color("e8c040"),
+		"destaque": "Au",
+		"texto": "O ouro (Au) quase não reage com o ar nem com a água, então não enferruja. Por isso os contatos dos chips e dos cabos ganham uma camadinha de ouro: a eletricidade sempre passa bem e com segurança.",
+		"curiosidade": "Essa camada de ouro é mais fina do que um fio de cabelo, mas já basta para proteger o contato!",
+	},
+	"carcaca_aluminio": {
+		"nome": "Notebook de alumínio",
+		"forma": "notebook",
+		"cor": Color("b8c0cc"),
+		"destaque": "Al Mg",
+		"texto": "Os aparelhos antigos tinham muito ferro, que é pesado. Hoje muitos notebooks e celulares usam alumínio (Al) e magnésio (Mg): metais leves, mas fortes, que deixam tudo mais fino e fácil de carregar.",
+		"curiosidade": "O alumínio vem de um minério chamado bauxita, e o Brasil é um dos maiores produtores de bauxita do mundo!",
+	},
+	"vidro_tela": {
+		"nome": "Vidro da tela",
+		"forma": "vidro",
+		"cor": Color("9fe0f0"),
+		"destaque": "Si O",
+		"texto": "O vidro é feito principalmente de sílica (dióxido de silício, a mesma substância da areia). O vidro dos celulares toma um banho químico de sal de potássio derretido: o potássio entra no vidro e deixa ele muito mais resistente a riscos e quedas.",
+		"curiosidade": "Os aparelhos antigos usavam vidro grosso e pesado. O de hoje é bem mais fino e muito mais resistente!",
+	},
+	"plastico": {
+		"nome": "Capinha de plástico",
+		"forma": "plastico",
+		"cor": Color("e05a8a"),
+		"destaque": "C H",
+		"texto": "Os plásticos são polímeros: moléculas gigantes feitas de carbono (C) e hidrogênio (H), que vêm principalmente do petróleo. Os plásticos de hoje são mais leves e resistentes que os antigos e protegem as peças de dentro do aparelho.",
+		"curiosidade": "Um plástico pode levar centenas de anos para se desfazer na natureza. Por isso é tão importante reciclar!",
+	},
+
 	# ---------- MUSEU (ANTIGOS) ----------
+	"tijolao": {
+		"nome": "Celular tijolão (anos 1980)",
+		"forma": "tijolao",
+		"cor": Color("3a3a42"),
+		"destaque": "Ni Cd",
+		"texto": "Os primeiros celulares eram enormes e pesavam quase 1 kg! Tinham muito plástico comum e uma bateria pesada de níquel e cádmio (Ni e Cd), que durava pouco: dava para falar só uns 30 minutos.",
+		"curiosidade": "Ele demorava umas 10 horas para carregar e só fazia ligações: nada de fotos, jogos ou internet!",
+	},
+	"gabinete_ferro": {
+		"nome": "Computador antigo",
+		"forma": "gabinete",
+		"cor": Color("d8cfb8"),
+		"destaque": "Fe",
+		"texto": "Os computadores antigos tinham caixas de ferro (aço) e peças enormes. Eram pesados, ocupavam a mesa inteira e eram muito mais lentos do que um celular de hoje.",
+		"curiosidade": "Um celular de hoje é mais de mil vezes mais rápido do que um computador de mesa dos anos 1990!",
+	},
 	"pilha_volta": {
 		"nome": "Pilha de Volta (1800)",
 		"forma": "volta",
@@ -243,6 +340,23 @@ const COMPONENTES := {
 		"curiosidade": "Um disquete guardava só 1,44 MB: uma única foto de celular hoje não caberia nele! O ícone de \"salvar\" dos programas é um disquete.",
 	},
 }
+
+
+## Perguntas do quiz: [pergunta, [opções], índice da certa, explicação].
+const QUIZ := [
+	["Qual material é o \"cérebro\" dos chips?", ["Ferro", "Silício", "Ouro"], 1,
+		"O silício substituiu peças lentas e deixou os aparelhos rápidos e pequenos."],
+	["Antigamente, os aparelhos eram...", ["Pesados e grandes", "Leves e finos", "Feitos de ouro puro"], 0,
+		"Eles usavam muito ferro, vidro grosso e plástico comum."],
+	["Onde devemos descartar um celular velho?", ["No lixo comum", "Enterrado no quintal", "Num ponto de coleta de lixo eletrônico"], 2,
+		"Assim os materiais são reciclados e não poluem a natureza."],
+	["Qual metal deixou as baterias leves e duradouras?", ["Lítio", "Chumbo", "Ferro"], 0,
+		"As baterias de íon-lítio são leves e podem ser recarregadas muitas vezes."],
+	["Por que os contatos dos chips são cobertos de ouro?", ["Para ficar bonito", "Porque o ouro não enferruja", "Porque o ouro é leve"], 1,
+		"O ouro quase não reage, então o contato elétrico fica sempre bom."],
+	["Qual metal leva a eletricidade pelos fios e circuitos?", ["Plástico", "Vidro", "Cobre"], 2,
+		"O cobre conduz eletricidade muito bem."],
+]
 
 
 static func conta(id: String) -> bool:

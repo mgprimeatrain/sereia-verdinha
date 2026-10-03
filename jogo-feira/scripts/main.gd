@@ -21,7 +21,8 @@ var mapa: Mapa
 var jogador: Jogador
 var sala_atual := ""
 var ui: Interface
-var estado := "titulo"  # titulo, jogando, inspecionando, trocando_sala
+var estado := "titulo"  # titulo, jogando, inspecionando, trocando_sala, falando, quiz
+var falas_ditas := {}
 var vistos := {}
 var total := 0
 var proximo: Inspecionavel
@@ -99,6 +100,17 @@ func _input(event: InputEvent) -> void:
 		"inspecionando":
 			if event.is_action_pressed("interagir") or event.is_action_pressed("cancelar"):
 				_fechar()
+		"falando":
+			if event.is_action_pressed("interagir") or event.is_action_pressed("cancelar"):
+				if ui.fala.avancar():
+					get_tree().paused = false
+					estado = "jogando"
+		"quiz":
+			if ui.quiz.tratar(event):
+				get_tree().paused = false
+				estado = "jogando"
+				if ui.quiz.terminou:
+					ui.mostrar_aviso("Você acertou %d de %d no quiz!" % [ui.quiz.acertos, Dados.QUIZ.size()], 4.0)
 
 
 func _process(_delta: float) -> void:
@@ -116,7 +128,12 @@ func _process(_delta: float) -> void:
 	for objeto in mapa.objetos:
 		objeto.destacado = objeto == melhor
 	proximo = melhor
-	ui.mostrar_dica("[E] Inspecionar: " + melhor.info["nome"] if melhor else "")
+	if melhor == null:
+		ui.mostrar_dica("")
+	elif melhor.info.get("tipo", "") == "quiz":
+		ui.mostrar_dica("[E] Jogar o quiz!")
+	else:
+		ui.mostrar_dica("[E] Inspecionar: " + melhor.info["nome"])
 
 
 ## Quando o coelho entra em outra sala: a tela escurece, volta e mostra o nome dela.
@@ -128,6 +145,7 @@ func _atualizar_sala() -> void:
 	sala_atual = id
 	if primeira_vez:
 		_mostrar_sala(id)
+		_falar_da_sala(id)
 		return
 	estado = "trocando_sala"
 	ui.mostrar_dica("")
@@ -137,6 +155,18 @@ func _atualizar_sala() -> void:
 	jogador.set_physics_process(true)
 	await ui.fade(false)
 	estado = "jogando"
+	_falar_da_sala(id)
+
+
+## Na primeira vez em cada sala, o coelho explica o tema dela.
+func _falar_da_sala(id: String) -> void:
+	if falas_ditas.has(id) or not Dados.SALAS[id].has("fala"):
+		return
+	falas_ditas[id] = true
+	estado = "falando"
+	get_tree().paused = true
+	ui.mostrar_dica("")
+	ui.fala.mostrar(Dados.SALAS[id]["fala"])
 
 
 func _mostrar_sala(id: String) -> void:
@@ -157,8 +187,14 @@ func _contar_achados() -> int:
 
 
 func _abrir(objeto: Inspecionavel) -> void:
-	estado = "inspecionando"
 	get_tree().paused = true
+	ui.mostrar_dica("")
+	if objeto.info.get("tipo", "") == "quiz":
+		estado = "quiz"
+		objeto.visto = true
+		ui.quiz.comecar()
+		return
+	estado = "inspecionando"
 	var novo := Dados.conta(objeto.id) and not vistos.has(objeto.id)
 	vistos[objeto.id] = true
 	objeto.visto = true

@@ -40,6 +40,9 @@ var curiosidade: Label
 var caixa_curiosidade: PanelContainer
 var estilo_curiosidade: StyleBoxFlat
 
+var fala: CaixaFala
+var quiz: Quiz
+
 var _tween_cartao: Tween
 var _tween_aviso: Tween
 var tempo := 0.0
@@ -50,6 +53,14 @@ func _ready() -> void:
 	_criar_vinheta()
 	_criar_hud()
 	_criar_janela()
+	fala = CaixaFala.new()
+	add_child(fala)
+	var centro := CenterContainer.new()
+	centro.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	centro.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	add_child(centro)
+	quiz = Quiz.new()
+	centro.add_child(quiz)
 	_criar_titulo()
 	fade_rect = ColorRect.new()
 	fade_rect.color = Color(0, 0, 0, 0)

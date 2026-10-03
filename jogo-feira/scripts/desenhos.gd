@@ -43,6 +43,14 @@ static func caixa(ci: CanvasItem, r: Rect2, cor: Color) -> void:
 	ci.draw_rect(r, cor)
 
 
+## Polígono pintado com contorno preto.
+static func poligono(ci: CanvasItem, pts: PackedVector2Array, cor: Color) -> void:
+	ci.draw_colored_polygon(pts, cor)
+	var fechado := pts.duplicate()
+	fechado.append(pts[0])
+	ci.draw_polyline(fechado, CONTORNO, 1.0)
+
+
 static func desenhar(ci: CanvasItem, forma: String, cor: Color, t: float) -> void:
 	match forma:
 		"pilha": _pilha(ci, cor)
@@ -61,6 +69,15 @@ static func desenhar(ci: CanvasItem, forma: String, cor: Color, t: float) -> voi
 		"tv": _tv(ci, cor, t)
 		"disquete": _disquete(ci, cor)
 		"aviso": _aviso(ci, cor)
+		"fio": _fio(ci, cor)
+		"conector": _conector(ci, cor)
+		"notebook": _notebook(ci, cor)
+		"vidro": _vidro(ci, cor)
+		"plastico": _plastico(ci, cor)
+		"tijolao": _tijolao(ci, cor)
+		"gabinete": _gabinete(ci, cor)
+		"minerio": _minerio(ci, cor)
+		"terminal": _terminal(ci, cor, t)
 		_: caixa(ci, Rect2(-10, -10, 20, 20), cor)
 
 
@@ -351,6 +368,96 @@ static func _aviso(ci: CanvasItem, cor: Color) -> void:
 	ci.draw_rect(Rect2(-9, -8, 18, 1.5), tinta)
 	ci.draw_rect(Rect2(-9, -5, 13, 1.5), tinta)
 	ci.draw_rect(Rect2(-9, -2, 16, 1.5), tinta)
+
+
+static func _fio(ci: CanvasItem, cor: Color) -> void:
+	caixa(ci, Rect2(-12, -11, 3, 22), MADEIRA)
+	caixa(ci, Rect2(9, -11, 3, 22), MADEIRA)
+	caixa(ci, Rect2(-9, -8, 18, 16), cor)
+	for y in range(-6, 8, 3):
+		ci.draw_line(Vector2(-9, y), Vector2(9, y), cor.darkened(0.3))
+	ci.draw_rect(Rect2(-8, -7, 3, 14), Color(1, 1, 1, 0.3))
+	ci.draw_polyline(PackedVector2Array([Vector2(9, 6), Vector2(14, 10), Vector2(11, 14)]), cor, 2.0)
+
+
+static func _conector(ci: CanvasItem, cor: Color) -> void:
+	ci.draw_line(Vector2(0, 12), Vector2(0, 15), Color("2a2a30"), 2.0)
+	caixa(ci, Rect2(-6, -3, 12, 15), Color("2a2a30"))
+	caixa(ci, Rect2(-5, -13, 10, 10), PRATA)
+	ci.draw_rect(Rect2(-3, -11, 6, 4), Color("4a4a52"))
+	for i in 4:
+		ci.draw_rect(Rect2(-3 + i * 1.6, -11, 1, 3), cor)
+	ci.draw_rect(Rect2(-4, 0, 2, 9), Color(1, 1, 1, 0.15))
+
+
+static func _notebook(ci: CanvasItem, cor: Color) -> void:
+	poligono(ci, PackedVector2Array([Vector2(-14, 4), Vector2(14, 4), Vector2(18, 11), Vector2(-18, 11)]), cor)
+	for x in range(-12, 13, 4):
+		ci.draw_rect(Rect2(x, 6, 2, 1), cor.darkened(0.3))
+		ci.draw_rect(Rect2(x - 1, 8, 2, 1), cor.darkened(0.3))
+	caixa(ci, Rect2(-13, -14, 26, 18), cor)
+	ci.draw_rect(Rect2(-11, -12, 22, 13), Color("2a3a5a"))
+	ci.draw_rect(Rect2(-11, -12, 22, 4), Color("3a5a8a"))
+	ci.draw_line(Vector2(-9, -10), Vector2(-4, -10), Color(1, 1, 1, 0.4))
+
+
+static func _vidro(ci: CanvasItem, cor: Color) -> void:
+	poligono(ci, PackedVector2Array([Vector2(-9, -14), Vector2(10, -11), Vector2(9, 14), Vector2(-10, 11)]), Color(cor, 0.75))
+	ci.draw_line(Vector2(-6, -9), Vector2(-2, -8), Color(1, 1, 1, 0.8), 1.0)
+	ci.draw_line(Vector2(-7, -5), Vector2(-6, 4), Color(1, 1, 1, 0.6), 1.0)
+	ci.draw_line(Vector2(4, 4), Vector2(6, 9), Color(1, 1, 1, 0.5), 1.0)
+
+
+static func _plastico(ci: CanvasItem, cor: Color) -> void:
+	caixa(ci, Rect2(-8, -13, 16, 26), cor)
+	ci.draw_rect(Rect2(-6, -11, 12, 22), cor.lightened(0.15))
+	caixa(ci, Rect2(-5, -10, 5, 6), Color("2a2a30"))
+	elipse(ci, Vector2(-3.5, -8.5), 1.2, 1.2, Color("4a4a60"))
+	elipse(ci, Vector2(-1.5, -6), 1.2, 1.2, Color("4a4a60"))
+	ci.draw_rect(Rect2(-6, -11, 2, 22), Color(1, 1, 1, 0.25))
+
+
+static func _tijolao(ci: CanvasItem, cor: Color) -> void:
+	caixa(ci, Rect2(2, -21, 3, 9), Color("1e1e22"))
+	caixa(ci, Rect2(-7, -13, 14, 27), cor)
+	caixa(ci, Rect2(-5, -10, 10, 5), Color("9ac87a"))
+	for linha in 4:
+		for coluna in 3:
+			ci.draw_rect(Rect2(-5 + coluna * 4, -2 + linha * 3.5, 2, 2), Color("c8c8d0"))
+	ci.draw_rect(Rect2(-6, -12, 2, 25), Color(1, 1, 1, 0.12))
+
+
+static func _gabinete(ci: CanvasItem, cor: Color) -> void:
+	caixa(ci, Rect2(-9, -14, 18, 28), cor)
+	caixa(ci, Rect2(-7, -11, 14, 4), cor.darkened(0.15))
+	caixa(ci, Rect2(-7, -5, 14, 3), cor.darkened(0.15))
+	ci.draw_rect(Rect2(-2, -4, 6, 1), Color("2a2a30"))
+	elipse(ci, Vector2(0, 5), 2, 2, CONTORNO)
+	elipse(ci, Vector2(0, 5), 1.2, 1.2, Color("7adc7a"))
+	for y in range(9, 13, 2):
+		ci.draw_line(Vector2(-6, y), Vector2(6, y), cor.darkened(0.25))
+
+
+static func _minerio(ci: CanvasItem, cor: Color) -> void:
+	poligono(ci, PackedVector2Array([Vector2(-13, 6), Vector2(-10, -5), Vector2(-3, -11), Vector2(6, -9), Vector2(13, -1), Vector2(11, 9), Vector2(-4, 11)]), cor)
+	ci.draw_colored_polygon(PackedVector2Array([Vector2(-10, -5), Vector2(-3, -11), Vector2(-1, -4), Vector2(-7, 0)]), cor.lightened(0.2))
+	ci.draw_colored_polygon(PackedVector2Array([Vector2(6, -9), Vector2(13, -1), Vector2(5, 1)]), cor.darkened(0.2))
+	for p in [Vector2(-5, 4), Vector2(3, -3), Vector2(7, 5), Vector2(-8, -1)]:
+		ci.draw_rect(Rect2(p, Vector2(2, 2)), Color("e8d0b0"))
+
+
+static func _terminal(ci: CanvasItem, cor: Color, t: float) -> void:
+	caixa(ci, Rect2(-11, -14, 22, 28), Color("4a5a8a"))
+	caixa(ci, Rect2(-8, -11, 16, 11), Color("15202a"))
+	var brilho := 0.7 + 0.3 * sin(t * 3.0)
+	var fonte := ThemeDB.fallback_font
+	ci.draw_string(fonte, Vector2(-8, -2), "?", HORIZONTAL_ALIGNMENT_CENTER, 16, 10, Color(cor, brilho))
+	elipse(ci, Vector2(-5, 6), 2, 2, CONTORNO)
+	elipse(ci, Vector2(-5, 6), 1.3, 1.3, Color("e05a5a"))
+	elipse(ci, Vector2(0, 6), 2, 2, CONTORNO)
+	elipse(ci, Vector2(0, 6), 1.3, 1.3, Color("f0c040"))
+	elipse(ci, Vector2(5, 6), 2, 2, CONTORNO)
+	elipse(ci, Vector2(5, 6), 1.3, 1.3, Color("5ac85a"))
 
 
 # ---------------------------------------------------------------- móveis
