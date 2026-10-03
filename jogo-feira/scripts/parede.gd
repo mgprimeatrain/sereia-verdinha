@@ -34,30 +34,39 @@ func _draw() -> void:
 	var c := Vector2(0, 8)
 	var d := Vector2(-16, 0)
 	var h := Vector2(0, -(ALTURA if alta else BAIXA))
-	var madeira := Desenhos.MADEIRA
+	var contorno := Desenhos.CONTORNO
 
 	if face_sul:
 		_face(d, c, h, papel)
 	if face_leste:
-		_face(c, b, h, papel.darkened(0.25))
-	var topo := Color("2a1a10") if alta else madeira.lightened(0.1)
+		_face(c, b, h, papel.darkened(0.12))
+	var topo := papel.darkened(0.35) if alta else Desenhos.MADEIRA
 	draw_colored_polygon(PackedVector2Array([a + h, b + h, c + h, d + h]), topo)
-	draw_polyline(PackedVector2Array([d + h, c + h, b + h]), madeira.lightened(0.2), 1.0)
+	# contorno preto grosso, como o do coelho
+	if face_sul:
+		draw_line(d + h, c + h, contorno, 2.0)
+		draw_line(d, c, contorno, 1.0)
+	if face_leste:
+		draw_line(c + h, b + h, contorno, 2.0)
+		draw_line(c, b, contorno, 1.0)
+	if face_sul and face_leste:
+		draw_line(c, c + h, contorno, 1.0)
 
 
 ## Desenha uma face vertical entre os pontos p1 e p2 (na base).
 func _face(p1: Vector2, p2: Vector2, h: Vector2, cor: Color) -> void:
 	draw_colored_polygon(PackedVector2Array([p1, p2, p2 + h, p1 + h]), cor)
 	if not alta:
-		draw_colored_polygon(PackedVector2Array([p1, p2, p2 + h, p1 + h]), Desenhos.MADEIRA.darkened(0.1))
+		draw_colored_polygon(PackedVector2Array([p1, p2, p2 + h, p1 + h]), Desenhos.MADEIRA_ESCURA)
 		return
-	# listras do papel de parede
-	for t in [0.25, 0.5, 0.75]:
-		var p := p1.lerp(p2, t)
-		draw_line(p + Vector2(0, -8), p + h + Vector2(0, 6), cor.lightened(0.07), 2.0)
-	# rodapé de madeira e moldura em cima
-	var rodape := Vector2(0, -6)
+	# bolinhas do papel de parede
+	for t in [0.25, 0.75]:
+		for alt in [16.0, 30.0]:
+			var p := p1.lerp(p2, t) + Vector2(0, -alt)
+			draw_rect(Rect2(p - Vector2(1, 1), Vector2(2, 2)), cor.darkened(0.12))
+	# rodapé de madeira e faixa em cima
+	var rodape := Vector2(0, -7)
 	draw_colored_polygon(PackedVector2Array([p1, p2, p2 + rodape, p1 + rodape]), Desenhos.MADEIRA)
-	draw_line(p1 + rodape, p2 + rodape, Desenhos.MADEIRA.lightened(0.2))
-	var moldura := Vector2(0, 4)
-	draw_colored_polygon(PackedVector2Array([p1 + h, p2 + h, p2 + h + moldura, p1 + h + moldura]), cor.darkened(0.35))
+	draw_line(p1 + rodape, p2 + rodape, Desenhos.CONTORNO, 1.0)
+	var faixa := Vector2(0, 5)
+	draw_colored_polygon(PackedVector2Array([p1 + h, p2 + h, p2 + h + faixa, p1 + h + faixa]), cor.darkened(0.2))

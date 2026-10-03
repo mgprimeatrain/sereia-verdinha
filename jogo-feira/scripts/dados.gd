@@ -17,27 +17,27 @@ const INICIO := Vector2i(20, 21)
 const SALAS := {
 	"laboratorio": {
 		"nome": "Laboratório do Coelho", "area": Rect2i(14, 14, 12, 10),
-		"papel": Color("3a2a1e"), "madeira": Color("4a3020"), "tapete": Color("3a1a14"),
+		"papel": Color("efe2c4"), "madeira": Color("d9a86c"), "tapete": Color("e0664f"),
 	},
 	"energia": {
 		"nome": "Sala da Energia", "area": Rect2i(2, 14, 10, 10),
-		"papel": Color("3d2c18"), "madeira": Color("4a3220"), "tapete": Color("33280f"),
+		"papel": Color("f6dc8a"), "madeira": Color("d29a5c"), "tapete": Color("f0a830"),
 	},
 	"telas": {
 		"nome": "Sala das Telas", "area": Rect2i(28, 14, 10, 10),
-		"papel": Color("2e2024"), "madeira": Color("402a20"), "tapete": Color("2c1622"),
+		"papel": Color("dccff0"), "madeira": Color("c99a70"), "tapete": Color("9c6fd6"),
 	},
 	"processamento": {
 		"nome": "Sala do Processamento", "area": Rect2i(15, 2, 10, 10),
-		"papel": Color("2a2a1c"), "madeira": Color("3e2c1e"), "tapete": Color("1c2416"),
+		"papel": Color("c6ecd6"), "madeira": Color("cfa070"), "tapete": Color("4fbf7f"),
 	},
 	"museu": {
 		"nome": "Museu da Tecnologia", "area": Rect2i(12, 26, 16, 8),
-		"papel": Color("3a1a16"), "madeira": Color("4a2e1c"), "tapete": Color("3c1612"),
+		"papel": Color("f0c6b4"), "madeira": Color("c08a58"), "tapete": Color("c8463c"),
 	},
 	"lixo": {
 		"nome": "Ferro-Velho Eletrônico", "area": Rect2i(29, 26, 10, 8),
-		"papel": Color("2c2a1a"), "madeira": Color("3a3020"), "tapete": Color(0, 0, 0, 0),
+		"papel": Color("d6d2c4"), "madeira": Color("b8a890"), "tapete": Color(0, 0, 0, 0),
 	},
 }
 

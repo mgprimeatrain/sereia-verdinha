@@ -1,6 +1,6 @@
 class_name Escuridao
 extends Node2D
-## Deixa o ambiente na meia-luz, com luz quente em volta do coelho e das velas.
+## Escurece só um pouquinho os cantos e deixa as outras salas apagadas.
 ## A luz é suave, com um pontilhado de pixel art na borda.
 
 const SHADER := """
@@ -9,8 +9,8 @@ uniform vec2 jogador;
 uniform float raio_jogador = 110.0;
 uniform vec4 luzes[64];
 uniform int total_luzes = 0;
-uniform float escuridao = 0.5;
-uniform vec3 tom : source_color = vec3(0.06, 0.03, 0.02);
+uniform float escuridao = 0.12;
+uniform vec3 tom : source_color = vec3(0.1, 0.06, 0.08);
 uniform vec4 sala = vec4(-99999.0, -99999.0, 99999.0, 99999.0);
 varying vec2 pos;
 void vertex() { pos = VERTEX; }
@@ -35,7 +35,7 @@ void fragment() {
 	// pontilhado de pixel art na transição entre luz e sombra
 	luz = clamp(luz + (pontilhado(p) - 0.5) * 0.08, 0.0, 1.0);
 	luz = floor(luz * 14.0 + 0.5) / 14.0;
-	COLOR = vec4(tom, mix(escuridao * (1.0 - luz), 0.96, some));
+	COLOR = vec4(mix(tom, vec3(0.08, 0.07, 0.1), some), mix(escuridao * (1.0 - luz), 1.0, some));
 }
 """
 

@@ -12,6 +12,7 @@ var chao := {}  # Vector2i -> id da sala ("" nas passagens)
 var bloqueado := {}  # Vector2i -> true (móveis e objetos)
 var paredes := {}  # Vector2i -> Parede
 var objetos: Array[Inspecionavel] = []
+var por_sala := []  # [nó, sala]: tudo que só aparece quando o coelho está naquela sala
 var escuridao: Escuridao
 var piso: Node2D
 
@@ -60,8 +61,15 @@ func montar() -> void:
 		objeto.sala = chao[item[1]]
 		add_child(objeto)
 		objetos.append(objeto)
+		por_sala.append([objeto, objeto.sala])
 		bloqueado[item[1]] = true
 		escuridao.adicionar_luz(objeto.position + Vector2(0, -16), 45, 0.4)
+
+
+## Mostra só as paredes, móveis e objetos da sala atual.
+func mostrar_sala(id: String) -> void:
+	for item in por_sala:
+		item[0].visible = item[1] == id
 
 
 func eh_chao(c: Vector2i) -> bool:
@@ -107,7 +115,18 @@ func _criar_paredes() -> void:
 			parede.alta = not (chao.has(c + Vector2i(0, -1)) or chao.has(c + Vector2i(-1, 0)) or chao.has(c + Vector2i(-1, -1)))
 			parede.face_sul = not _eh_parede(c + Vector2i(0, 1))
 			parede.face_leste = not _eh_parede(c + Vector2i(1, 0))
-			parede.papel = Dados.SALAS[_sala_vizinha(c)]["papel"]
+			# a parede pertence à sala para onde ela está virada
+			var lado := [Vector2i(0, 1), Vector2i(1, 0), Vector2i(1, 1)] if parede.alta else [Vector2i(0, -1), Vector2i(-1, 0), Vector2i(-1, -1)]
+			var dona := ""
+			for d in lado:
+				var id: String = chao.get(c + d, "")
+				if id != "":
+					dona = id
+					break
+			if dona == "":
+				dona = _sala_vizinha(c)
+			parede.papel = Dados.SALAS[dona]["papel"]
+			por_sala.append([parede, dona])
 			parede.position = iso(centro(c))
 			add_child(parede)
 			paredes[c] = parede
@@ -137,6 +156,7 @@ func _criar_movel(tipo: String, celula: Vector2i) -> void:
 		return
 
 	movel.position = iso(centro(celula))
+	por_sala.append([movel, chao.get(celula, _sala_vizinha(celula))])
 	if tipo == "cabos":
 		movel.z_index = -6
 	else:

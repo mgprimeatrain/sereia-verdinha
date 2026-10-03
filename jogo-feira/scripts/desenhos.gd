@@ -4,7 +4,7 @@ extends RefCounted
 ## Quando vocês tiverem a pixel art, basta colocar os PNGs na pasta arte/
 ## que o jogo usa as imagens no lugar destes desenhos.
 
-const CONTORNO := Color("1a1620")
+const CONTORNO := Color("111015")
 const DOURADO := Color("d4af37")
 const PRATA := Color("c0c4cc")
 
@@ -355,8 +355,8 @@ static func _aviso(ci: CanvasItem, cor: Color) -> void:
 
 # ---------------------------------------------------------------- móveis
 
-const MADEIRA := Color("4a2e1a")
-const MADEIRA_ESCURA := Color("2e1c10")
+const MADEIRA := Color("b8743e")
+const MADEIRA_ESCURA := Color("8a5228")
 
 
 static func largura_movel(tipo: String) -> float:

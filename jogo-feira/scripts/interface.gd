@@ -7,13 +7,13 @@ const ALTURA := 270.0
 
 const SHADER_VINHETA := """
 shader_type canvas_item;
-uniform float forca = 0.6;
+uniform float forca = 0.3;
 float ruido(vec2 p) { return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453); }
 void fragment() {
 	vec2 uv = UV - vec2(0.5);
 	uv.x *= 1.25;
 	float v = smoothstep(0.28, 0.75, length(uv));
-	float grao = ruido(floor(UV * vec2(480.0, 270.0)) + vec2(floor(TIME * 12.0) * 3.1)) * 0.06;
+	float grao = ruido(floor(UV * vec2(480.0, 270.0)) + vec2(floor(TIME * 12.0) * 3.1)) * 0.02;
 	COLOR = vec4(0.02, 0.01, 0.0, v * forca + grao);
 }
 """

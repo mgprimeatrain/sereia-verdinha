@@ -36,7 +36,7 @@ func _ready() -> void:
 	# O mundo é desenhado em baixa resolução (320x180) e ampliado,
 	# por isso fica com cara de pixel art e a câmera fica bem perto do coelho.
 	# A interface fica nítida por cima.
-	RenderingServer.set_default_clear_color(Color("0e0806"))
+	RenderingServer.set_default_clear_color(Color("14121a"))
 	var tela := SubViewportContainer.new()
 	tela.process_mode = Node.PROCESS_MODE_PAUSABLE
 	tela.scale = Vector2(1.5, 1.5)
@@ -145,8 +145,7 @@ func _mostrar_sala(id: String) -> void:
 	var area: Rect2i = Dados.SALAS[id]["area"]
 	var r := Rect2(Vector2(area.position - Vector2i(3, 3)), Vector2(area.size + Vector2i(4, 4)))
 	mapa.escuridao.definir_sala(Rect2(r.position * Mapa.CELULA, r.size * Mapa.CELULA))
-	for objeto in mapa.objetos:
-		objeto.marcador.visible = objeto.sala == id
+	mapa.mostrar_sala(id)
 
 
 func _contar_achados() -> int:
