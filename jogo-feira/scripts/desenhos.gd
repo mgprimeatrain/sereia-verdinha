@@ -7,6 +7,7 @@ extends RefCounted
 const CONTORNO := Color("111015")
 const DOURADO := Color("d4af37")
 const PRATA := Color("c0c4cc")
+const SOMBRA := Color(0.16, 0.12, 0.22, 0.38)
 
 static var _luz: GradientTexture2D
 
@@ -84,7 +85,6 @@ static func coelho(ci: CanvasItem, dir: Vector2, passo: float, andando: bool) ->
 		lado = signf(dir.x)
 	var o := Vector2(0, -absf(sin(passo)) * 1.2 if andando else 0.0)
 
-	elipse(ci, Vector2(0, 0), 9, 3, Color(0, 0, 0, 0.45))
 
 	# pés
 	var p := sin(passo) * 1.5 if andando else 0.0
@@ -404,7 +404,7 @@ static func movel(ci: CanvasItem, tipo: String, t: float) -> void:
 
 
 static func _estante(ci: CanvasItem) -> void:
-	elipse(ci, Vector2(0, 0), 20, 3, Color(0, 0, 0, 0.4))
+	elipse(ci, Vector2(2, 0), 22, 4.0, SOMBRA)
 	caixa(ci, Rect2(-18, -52, 36, 52), MADEIRA)
 	ci.draw_rect(Rect2(-16, -50, 32, 48), Color("1a0f08"))
 	var cores := [Color("6a2a20"), Color("2e4a2e"), Color("6a5a2a"), Color("2a3048"), Color("5a3a4a"), Color("7a6a4a")]
@@ -430,7 +430,7 @@ static func _estante(ci: CanvasItem) -> void:
 
 
 static func _bancada(ci: CanvasItem, t: float) -> void:
-	elipse(ci, Vector2(0, 0), 28, 3, Color(0, 0, 0, 0.4))
+	elipse(ci, Vector2(2, 0), 30, 4.0, SOMBRA)
 	caixa(ci, Rect2(-24, -14, 3, 14), MADEIRA_ESCURA)
 	caixa(ci, Rect2(21, -14, 3, 14), MADEIRA_ESCURA)
 	caixa(ci, Rect2(-22, -14, 44, 6), MADEIRA)
@@ -453,7 +453,7 @@ static func _bancada(ci: CanvasItem, t: float) -> void:
 
 
 static func _armario(ci: CanvasItem) -> void:
-	elipse(ci, Vector2(0, 0), 15, 3, Color(0, 0, 0, 0.4))
+	elipse(ci, Vector2(2, 0), 17, 4.0, SOMBRA)
 	caixa(ci, Rect2(-13, -46, 26, 46), MADEIRA)
 	ci.draw_rect(Rect2(-11, -44, 10, 30), MADEIRA_ESCURA)
 	ci.draw_rect(Rect2(1, -44, 10, 30), MADEIRA_ESCURA)
@@ -472,7 +472,7 @@ static func _armario(ci: CanvasItem) -> void:
 
 
 static func _caixas(ci: CanvasItem) -> void:
-	elipse(ci, Vector2(0, 0), 17, 3, Color(0, 0, 0, 0.4))
+	elipse(ci, Vector2(2, 0), 19, 4.0, SOMBRA)
 	var papelao := Color("7a5a35")
 	caixa(ci, Rect2(-14, -13, 16, 13), papelao)
 	caixa(ci, Rect2(3, -10, 12, 10), papelao.darkened(0.1))
@@ -483,7 +483,7 @@ static func _caixas(ci: CanvasItem) -> void:
 
 
 static func _mesa_vela(ci: CanvasItem, t: float) -> void:
-	elipse(ci, Vector2(0, 0), 12, 3, Color(0, 0, 0, 0.4))
+	elipse(ci, Vector2(2, 0), 14, 4.0, SOMBRA)
 	caixa(ci, Rect2(-8, -12, 2, 12), MADEIRA_ESCURA)
 	caixa(ci, Rect2(6, -12, 2, 12), MADEIRA_ESCURA)
 	caixa(ci, Rect2(-11, -15, 22, 4), MADEIRA)
@@ -498,7 +498,7 @@ static func _mesa_vela(ci: CanvasItem, t: float) -> void:
 
 
 static func _lampiao(ci: CanvasItem, t: float) -> void:
-	elipse(ci, Vector2(0, 0), 7, 2.5, Color(0, 0, 0, 0.4))
+	elipse(ci, Vector2(2, 0), 9, 3.5, SOMBRA)
 	caixa(ci, Rect2(-5, -4, 10, 4), Color("3a3028"))
 	ci.draw_rect(Rect2(-4, -16, 8, 12), Color(1.0, 0.75, 0.4, 0.35))
 	ci.draw_rect(Rect2(-5, -16, 1, 12), Color("3a3028"))
@@ -517,7 +517,7 @@ static func _cabos(ci: CanvasItem) -> void:
 static func _barril(ci: CanvasItem, t: float) -> void:
 	var gosma := 0.5 + 0.15 * sin(t * 2.0)
 	elipse(ci, Vector2(4, 1), 14, 3.5, Color(0.6, 0.8, 0.2, gosma))
-	elipse(ci, Vector2(0, 0), 11, 3, Color(0, 0, 0, 0.4))
+	elipse(ci, Vector2(2, 0), 13, 4.0, SOMBRA)
 	caixa(ci, Rect2(-9, -24, 18, 24), Color("4a5228"))
 	ci.draw_rect(Rect2(-9, -20, 18, 2), Color("2e3418"))
 	ci.draw_rect(Rect2(-9, -6, 18, 2), Color("2e3418"))
@@ -528,7 +528,7 @@ static func _barril(ci: CanvasItem, t: float) -> void:
 
 
 static func _sucata(ci: CanvasItem) -> void:
-	elipse(ci, Vector2(0, 0), 22, 4, Color(0, 0, 0, 0.4))
+	elipse(ci, Vector2(2, 0), 24, 5.0, SOMBRA)
 	caixa(ci, Rect2(-20, -10, 18, 10), Color("8a8270"))
 	ci.draw_rect(Rect2(-18, -8, 14, 1), Color("4a4438"))
 	ci.draw_rect(Rect2(-18, -5, 14, 1), Color("4a4438"))

@@ -54,6 +54,11 @@ Exemplos:
 
 Pode colocar só algumas: o que faltar é trocado pela imagem mais parecida que
 existir (por exemplo, sem "correndo de frente" ele usa "andando de frente").
+
+O jogo arruma as imagens sozinho quando abre: apaga o fundo branco de fora do
+contorno preto, alinha os quadros pelos pés e pela cabeça (para o coelho não
+tremer) e deixa o coelho sempre do mesmo tamanho. Para mudar o tamanho do
+coelho, mude `ALTURA_COELHO` no começo de `scripts/jogador.gd`.
 Sem nenhuma imagem, o jogo usa o coelho desenhado por código.
 
 ## Imagens dos componentes
@@ -93,6 +98,7 @@ Tudo fica em `scripts/dados.gd`: os textos, as cores, as salas e onde cada objet
 - `scripts/mapa.gd`: monta o mapa inteiro (chão, paredes, móveis, objetos)
 - `scripts/parede.gd`: os blocos de parede (ficam transparentes quando tampam o coelho)
 - `scripts/jogador.gd`: o coelho e a câmera que segue ele
+- `scripts/recorte.gd`: arruma os sprites do coelho (fundo branco, alinhamento, tamanho)
 - `scripts/objeto.gd`: os componentes que dá para inspecionar
 - `scripts/escuridao.gd`: a escuridão e a luz da lanterna
 - `scripts/interface.gd`: tela de título, HUD e janela de inspeção

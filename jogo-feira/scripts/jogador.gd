@@ -13,10 +13,11 @@ extends Node2D
 ## Exemplos: coelho_andando_frente_8x3.png, coelho_pulando_lado_12x2.png
 ## O que faltar é trocado pela imagem mais parecida que existir. Sem nenhuma
 ## imagem, o jogo usa o coelho desenhado por código.
+## O fundo branco e o desalinhamento dos quadros são arrumados sozinhos (recorte.gd).
 
 const VELOCIDADE := 75.0
 const VELOCIDADE_CORRENDO := 130.0
-const ALTURA_NA_TELA := 40.0  # altura do quadro do coelho em pixels do jogo
+const ALTURA_COELHO := 34.0  # altura do coelho em pixels do jogo
 const PASTA := "res://arte/"
 const ACOES := ["parado", "andando", "correndo", "pulando"]
 const VISTAS := ["frente", "costas", "lado"]
@@ -97,17 +98,13 @@ func _carregar_sprites() -> void:
 		var folha: Texture2D = load(PASTA + nome)
 		if folha == null:
 			continue
-		var tam := Vector2(folha.get_width() / grade.x, folha.get_height() / grade.y)
+		var preparado := Recorte.preparar(folha, grade, ALTURA_COELHO)
 		quadros.add_animation(chave)
 		quadros.set_animation_speed(chave, FPS[acao])
 		quadros.set_animation_loop(chave, acao != "pulando")
-		for linha in grade.y:
-			for coluna in grade.x:
-				var quadro := AtlasTexture.new()
-				quadro.atlas = folha
-				quadro.region = Rect2(Vector2(coluna, linha) * tam, tam)
-				quadros.add_frame(chave, quadro)
-		alturas[chave] = tam.y
+		for quadro in preparado["quadros"]:
+			quadros.add_frame(chave, quadro)
+		alturas[chave] = preparado["altura"]
 	print("Sprites do coelho carregados: ", quadros.get_animation_names())
 	if quadros.get_animation_names().is_empty():
 		return
@@ -197,8 +194,7 @@ func _animar(altura_pulo: float) -> void:
 	if sprite.animation != nome:
 		sprite.play(nome)
 		var altura: float = alturas[nome]
-		sprite.scale = Vector2.ONE * (ALTURA_NA_TELA / altura)
-		sprite.offset = Vector2(0, -altura / 2.0)
+		sprite.offset = Vector2(0, -roundf(altura / 2.0))
 	elif not sprite.is_playing() and not nome.begins_with("pulando"):
 		sprite.play(nome)
 	if acao == "parado" and nome.begins_with("andando"):
@@ -223,14 +219,13 @@ func posicionar(p: Vector2) -> void:
 
 
 func _draw() -> void:
-	if sprite:
-		Desenhos.elipse(self, Vector2.ZERO, 8, 2.5, Color(0, 0, 0, 0.35))
-	else:
+	# sombra (fica menor quando o coelho está no ar)
+	var no_ar := _altura_pulo_atual() / 14.0
+	Desenhos.elipse(self, Vector2(1, 0), 11.0 - no_ar * 4.0, 3.5 - no_ar, Desenhos.SOMBRA)
+	if not sprite:
 		draw_set_transform(Vector2(0, -_altura_pulo_atual()))
 		Desenhos.coelho(self, direcao, passo, andando)
 		draw_set_transform(Vector2.ZERO)
-	if pulo >= 0.0:
-		Desenhos.elipse(self, Vector2.ZERO, 7, 2, Color(0, 0, 0, 0.25))
 
 
 func _altura_pulo_atual() -> float:

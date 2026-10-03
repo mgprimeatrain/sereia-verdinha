@@ -194,6 +194,18 @@ func _desenhar_piso() -> void:
 				var ex := x0 + CELULA - emenda
 				piso.draw_line(iso(Vector2(ex, ty)), iso(Vector2(ex, ty + 4)), madeira.darkened(0.35))
 
+	# sombra das paredes altas no chão
+	for c: Vector2i in chao:
+		var x0 := c.x * CELULA
+		var y0 := c.y * CELULA
+		var parede_n: Parede = paredes.get(c + Vector2i(0, -1))
+		var parede_o: Parede = paredes.get(c + Vector2i(-1, 0))
+		var sombra := Color(Desenhos.SOMBRA, 0.25)
+		if parede_n and parede_n.alta:
+			_quad(Vector2(x0, y0), Vector2(x0 + CELULA, y0), Vector2(x0 + CELULA, y0 + 7), Vector2(x0, y0 + 7), sombra)
+		if parede_o and parede_o.alta:
+			_quad(Vector2(x0, y0), Vector2(x0 + 7, y0), Vector2(x0 + 7, y0 + CELULA), Vector2(x0, y0 + CELULA), sombra)
+
 	# tapetes no meio das salas
 	for id in Dados.SALAS:
 		var tapete: Color = Dados.SALAS[id]["tapete"]
